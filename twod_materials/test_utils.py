@@ -39,7 +39,6 @@ except IOError:
 class UtilsTest(unittest.TestCase):
 
     def test_is_converged_with_controls(self):
-        print os.getcwd()
         false_control = is_converged('./')
         true_control = is_converged(os.path.join(PACKAGE_PATH,
                                                  'stability/tests/BiTeCl'))

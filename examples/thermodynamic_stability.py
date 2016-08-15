@@ -5,6 +5,7 @@ specified INTERVAL, checks if all relaxations have converged. Once all
 are converged, calculates and plots the formation energies of all 2D
 materials as stability_plot.pdf.
 """
+from __future__ import print_function, division, unicode_literals
 
 import os
 
@@ -34,7 +35,7 @@ if __name__ == '__main__':
 
     loop = True
     while loop:
-        print '>> Checking convergence'
+        print('>> Checking convergence')
         finished_2d, finished_3d = [], []
 
         for directory in directories:
@@ -46,12 +47,12 @@ if __name__ == '__main__':
 
         if len(finished_2d + finished_3d) == len(
                 directories + competing_species):
-            print '>> Plotting hull distances'
+            print('>> Plotting hull distances')
             plot_hull_distances(get_hull_distances(finished_2d))
             loop = False
         else:
-            print '>> Not all directories converged ({}/{})'.format(
+            print('>> Not all directories converged ({}/{})'.format(
                 len(finished_2d + finished_3d), len(
-                    directories + competing_species))
+                    directories + competing_species)))
 
             time.sleep(INTERVAL)

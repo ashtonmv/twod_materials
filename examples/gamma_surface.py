@@ -1,3 +1,5 @@
+from __future__ import print_function, division, unicode_literals
+
 from twod_materials.friction.startup import run_friction_calculations
 from twod_materials.friction.analysis import plot_gamma_surface
 
@@ -41,10 +43,10 @@ if __name__ == '__main__':
                     break
 
             if not converged[directory]:
-                print '>> Not all directories converged'
+                print('>> Not all directories converged')
                 loop = True
 
-            print '>> Plotting gamma surface for {}'.format(directory)
+            print('>> Plotting gamma surface for {}'.format(directory))
             plot_gamma_surface()
 
             os.chdir('../')

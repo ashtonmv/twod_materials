@@ -5,6 +5,7 @@ specified INTERVAL, checks if all relaxations have converged. Once all
 are converged, calculates and plots the formation energies of all 2D
 materials as stability_plot.pdf.
 """
+from __future__ import print_function, division, unicode_literals
 
 import os
 
@@ -32,7 +33,7 @@ if __name__ == '__main__':
 
     loop = True
     while loop:
-        print '>> Checking convergence'
+        print('>> Checking convergence')
         finished = []
 
         for directory in directories:
@@ -40,14 +41,14 @@ if __name__ == '__main__':
                 finished.append(directory)
 
         if len(finished) == len(directories):
-            print '>> Plotting band structures'
+            print('>> Plotting band structures')
             for directory in finished:
                 os.chdir('{}/pbe_bands'.format(directory))
                 plot_normal_band_structure()
                 os.chdir('../../')
             loop = False
         else:
-            print '>> Not all directories converged ({}/{})'.format(
-                len(finished), len(directories))
+            print('>> Not all directories converged ({}/{})'.format(
+                len(finished), len(directories)))
 
             time.sleep(INTERVAL)
