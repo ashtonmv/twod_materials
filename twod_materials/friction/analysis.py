@@ -388,4 +388,4 @@ def get_mu_vs_F_N(basin_dir):
 
     mu = [f / N for f, N in zip(F_f, F_N)]
 
-    return({'F_N': F_N, 'mu': mu})
+    return({'F_N': F_N, 'mu': mu, 'F_f': F_f})

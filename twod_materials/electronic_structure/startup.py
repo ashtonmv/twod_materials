@@ -49,7 +49,7 @@ def run_linemode_calculation(submit=True, force_overwrite=False):
     high symmetry k-paths.
     """
 
-    PBE_INCAR_DICT = {'EDIFF': 1e-6, 'IBRION': 2, 'ICHARG': 11, 'ISIF': 3,
+    PBE_INCAR_DICT = {'EDIFF': 1e-6, 'IBRION': 2, 'ISIF': 3,
                       'ISMEAR': 1, 'NSW': 0, 'LVTOT': True, 'LVHAR': True,
                       'LORBIT': 1, 'LREAL': 'Auto', 'NPAR': 4,
                       'PREC': 'Accurate', 'LWAVE': True, 'SIGMA': 0.1,
@@ -60,16 +60,16 @@ def run_linemode_calculation(submit=True, force_overwrite=False):
     if not os.path.isdir('pbe_bands'):
         os.mkdir('pbe_bands')
     if force_overwrite or not is_converged('pbe_bands'):
-        os.chdir('pbe_bands')
-        os.system('cp ../CONTCAR ./POSCAR')
-        os.system('cp ../POTCAR ./')
-        os.system('cp ../CHGCAR .')
+        os.system('cp CONTCAR pbe_bands/POSCAR')
+        os.system('cp POTCAR pbe_bands/')
+#        os.system('cp ../CHGCAR .')
         PBE_INCAR_DICT.update({'MAGMOM': get_magmom_string()})
-        Incar.from_dict(PBE_INCAR_DICT).write_file('INCAR')
+        Incar.from_dict(PBE_INCAR_DICT).write_file('pbe_bands/INCAR')
         structure = Structure.from_file('POSCAR')
         kpath = HighSymmKpath(structure)
-        Kpoints.automatic_linemode(20, kpath).write_file('KPOINTS')
+        Kpoints.automatic_linemode(20, kpath).write_file('pbe_bands/KPOINTS')
         remove_z_kpoints()
+        os.chdir('pbe_bands')
         if HIPERGATOR == 1:
             write_pbs_runjob(directory, 1, 16, '800mb', '6:00:00', VASP)
             submission_command = 'qsub runjob'

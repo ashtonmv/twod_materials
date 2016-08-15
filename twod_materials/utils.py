@@ -166,7 +166,7 @@ def get_structure_type(structure, write_poscar_from_cluster=False):
             if e.symbol in ['He', 'Ne', 'Ar', 'Kr', 'Xe']]) == 0:
         type = 'noble gas'
     else:
-        if len(structure.sites) < 25:
+        if len(structure.sites) < 45:
             structure.make_supercell(2)
 
         # Create a dict of sites as keys and lists of their
