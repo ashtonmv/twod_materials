@@ -64,14 +64,13 @@ def run_linemode_calculation(submit=True, force_overwrite=False):
     if force_overwrite or not is_converged('pbe_bands'):
         os.system('cp CONTCAR pbe_bands/POSCAR')
         os.system('cp POTCAR pbe_bands/')
-#        os.system('cp ../CHGCAR .')
         PBE_INCAR_DICT.update({'MAGMOM': get_magmom_string()})
         Incar.from_dict(PBE_INCAR_DICT).write_file('pbe_bands/INCAR')
         structure = Structure.from_file('POSCAR')
         kpath = HighSymmKpath(structure)
         Kpoints.automatic_linemode(20, kpath).write_file('pbe_bands/KPOINTS')
-        remove_z_kpoints()
         os.chdir('pbe_bands')
+        remove_z_kpoints()
         if HIPERGATOR == 1:
             write_pbs_runjob(directory, 1, 16, '800mb', '6:00:00', VASP)
             submission_command = 'qsub runjob'

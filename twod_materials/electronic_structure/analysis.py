@@ -228,10 +228,10 @@ def plot_band_structure(fmt='pdf'):
 
     vasprun = Vasprun('vasprun.xml')
 
-    if 'pbe_bands' in os.getcwd():
-        efermi = Vasprun('../vasprun.xml').efermi
-    else:
-        efermi = vasprun.efermi
+#    if 'pbe_bands' in os.getcwd():
+#        efermi = Vasprun('../vasprun.xml').efermi
+#    else:
+    efermi = vasprun.efermi
     bsp = BSPlotter(vasprun.get_band_structure('KPOINTS', line_mode=True,
                                                efermi=efermi))
     bsp.save_plot('band_structure.{}'.format(fmt), ylim=(-5, 5))
