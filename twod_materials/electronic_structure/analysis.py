@@ -221,46 +221,46 @@ def plot_local_potential(axis=2, fmt='pdf'):
     plt.savefig('locpot.{}'.format(fmt))
 
 
-def plot_band_structure(fmt='pdf'):
+def plot_band_structure(fmt='pdf', ylim=(-5, 5)):
     """
     Plot a standard band structure with no projections.
     """
 
     vasprun = Vasprun('vasprun.xml')
-
-#    if 'pbe_bands' in os.getcwd():
-#        efermi = Vasprun('../vasprun.xml').efermi
-#    else:
     efermi = vasprun.efermi
     bsp = BSPlotter(vasprun.get_band_structure('KPOINTS', line_mode=True,
                                                efermi=efermi))
-    bsp.save_plot('band_structure.{}'.format(fmt), ylim=(-5, 5))
+    plot = bsp.get_plot(ylim=ylim)
+    plot.savefig('band_structure.{}'.format(fmt))
 
 
-def plot_color_projected_bands(fmt='pdf'):
+def plot_color_projected_bands(fmt='pdf', ylim=(-5, 5)):
     """
     Plot a single band structure where the color of the band indicates
     the elemental character of the eigenvalue.
     """
+
     vasprun = Vasprun('vasprun.xml', parse_projected_eigen=True)
     bs = vasprun.get_band_structure('KPOINTS', line_mode=True)
     bspp = BSPlotterProjected(bs)
-    bspp.get_elt_projected_plots_color().savefig(
+    bspp.get_elt_projected_plots_color(ylim=ylim).savefig(
         'color_projected_bands.{}'.format(fmt))
 
 
-def plot_elt_projected_bands(fmt='pdf'):
+def plot_elt_projected_bands(fmt='pdf', ylim=(-5, 5)):
     """
     Plot separate band structures for each element where the size of the
     markers indicates the elemental character of the eigenvalue.
     """
+
     vasprun = Vasprun('vasprun.xml', parse_projected_eigen=True)
     bs = vasprun.get_band_structure('KPOINTS', line_mode=True)
     bspp = BSPlotterProjected(bs)
-    bspp.get_elt_projected_plots().savefig('elt_projected_bands.{}'.format(fmt))
+    bspp.get_elt_projected_plots(ylim=ylim).savefig(
+        'elt_projected_bands.{}'.format(fmt))
 
 
-def plot_orb_projected_bands(orbitals, fmt='pdf'):
+def plot_orb_projected_bands(orbitals, fmt='pdf', ylim=(-5, 5)):
     """
     Plot a separate band structure for each orbital of each element in
     orbitals.
@@ -268,10 +268,11 @@ def plot_orb_projected_bands(orbitals, fmt='pdf'):
     orbitals (dict): {element: [orbitals]}
         e.g. {'Mo': ['s', 'p', 'd'], 'S': ['p']}
     """
+    
     vasprun = Vasprun('vasprun.xml', parse_projected_eigen=True)
     bs = vasprun.get_band_structure('KPOINTS', line_mode=True)
     bspp = BSPlotterProjected(bs)
-    bspp.get_projected_plots_dots(orbitals).savefig(
+    bspp.get_projected_plots_dots(orbitals, ylim=ylim).savefig(
         'orb_projected_bands.{}'.format(fmt))
 
 
