@@ -2,6 +2,10 @@ from __future__ import print_function, division, unicode_literals
 
 import os
 
+import matplotlib as mpl
+mpl.use('Agg')
+import matplotlib.pyplot as plt
+
 import numpy as np
 
 from pymatgen.core.structure import Structure
@@ -9,10 +13,6 @@ from pymatgen.io.vasp.outputs import Vasprun, Locpot, VolumetricData
 from pymatgen.io.vasp.inputs import Incar
 from pymatgen.electronic_structure.plotter import BSPlotter, BSPlotterProjected
 from pymatgen.electronic_structure.core import Spin
-
-import matplotlib as mpl
-mpl.use('Agg')
-import matplotlib.pyplot as plt
 
 from twod_materials.utils import is_converged
 
@@ -268,7 +268,7 @@ def plot_orb_projected_bands(orbitals, fmt='pdf', ylim=(-5, 5)):
     orbitals (dict): {element: [orbitals]}
         e.g. {'Mo': ['s', 'p', 'd'], 'S': ['p']}
     """
-    
+
     vasprun = Vasprun('vasprun.xml', parse_projected_eigen=True)
     bs = vasprun.get_band_structure('KPOINTS', line_mode=True)
     bspp = BSPlotterProjected(bs)
