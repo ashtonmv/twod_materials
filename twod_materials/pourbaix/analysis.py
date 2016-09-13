@@ -28,7 +28,7 @@ import twod_materials
 
 PACKAGE_PATH = twod_materials.__file__.replace('__init__.pyc', '')
 PACKAGE_PATH = PACKAGE_PATH.replace('__init__.py', '')
-PACKAGE_PATH = os.path.join(PACKAGE_PATH, 'pourbaix')
+PACKAGE_PATH = '/home/mashton/group_IV_oxides'
 
 ION_DATA = loadfn(os.path.join(PACKAGE_PATH, 'ions.yaml'))
 END_MEMBERS = loadfn(os.path.join(PACKAGE_PATH, 'end_members.yaml'))
@@ -63,7 +63,10 @@ def plot_pourbaix_diagram(metastability=0.0, ion_concentration=1e-6, fmt='pdf'):
     composition = Structure.from_file('POSCAR').composition
     energy = Vasprun('vasprun.xml').final_energy
 
+    si_composition = {'Si': 2}
+
     cmpd = ComputedEntry(composition, energy)
+    si_cmpd = ComputedEntry(si_composition, 0)
 
     # Define the chemsys that describes the 2D compound.
     chemsys = ['O', 'H'] + [elt.symbol for elt in composition.elements
@@ -91,12 +94,16 @@ def plot_pourbaix_diagram(metastability=0.0, ion_concentration=1e-6, fmt='pdf'):
     form_energy = cmpd.energy
     for elt in composition.as_dict():
         form_energy -= END_MEMBERS[elt] * cmpd.composition[elt]
+    si_form_energy = 0
 
     # Convert the compound entry to a pourbaix entry.
     # Default concentration for solid entries = 1
     pbx_cmpd = PourbaixEntry(cmpd)
+    pbx_si = PourbaixEntry(si_cmpd)
     pbx_cmpd.g0_replace(form_energy)
+    pbx_si.g0_replace(0)
     pbx_cmpd.reduced_entry()
+    pbx_si.reduced_entry()
 
     # Add corrected ionic entries to the pourbaix diagram
     # dft corrections for experimental ionic energies:
@@ -126,13 +133,13 @@ def plot_pourbaix_diagram(metastability=0.0, ion_concentration=1e-6, fmt='pdf'):
     # g = g0_ref + 0.0591 * log10(conc) - nO * mu_H2O +
     # (nH - 2nO) * pH + phi * (-nH + 2nO + q)
 
-    all_entries = [pbx_cmpd] + pbx_ion_entries
+    all_entries = [pbx_cmpd, pbx_si] + pbx_ion_entries
 
     pourbaix = PourbaixDiagram(all_entries)
 
     # Analysis features
     panalyzer = PourbaixAnalyzer(pourbaix)
-    instability = panalyzer.get_e_above_hull(pbx_cmpd)
+#    instability = panalyzer.get_e_above_hull(pbx_cmpd)
 
     plotter = PourbaixPlotter(pourbaix)
     plot = plotter.get_pourbaix_plot(limits=[[0, 14], [-2, 2]],
@@ -174,4 +181,4 @@ def plot_pourbaix_diagram(metastability=0.0, ion_concentration=1e-6, fmt='pdf'):
 
     plot.close()
 
-    return instability
+#    return instability

@@ -429,3 +429,36 @@ def plot_density_of_states(fmt='pdf'):
     ax.plot(x, down, color='green')
     ax.plot(x, sum, color='black' )
     plt.savefig('density_of_states.{}'.format(fmt))
+
+
+def find_dirac_nodes():
+    """
+    Look for band crossings near (within `tol` eV) the Fermi level.
+    """
+
+    vasprun = Vasprun('vasprun.xml')
+    dirac = False
+    if vasprun.get_band_structure().get_band_gap()['energy'] < 0.1:
+        efermi = vasprun.efermi
+        bsp = BSPlotter(vasprun.get_band_structure('KPOINTS', line_mode=True,
+                                                   efermi=efermi))
+        bands = []
+        data = bsp.bs_plot_data(zero_to_efermi=True)
+        for d in range(len(data['distances'])):
+            for i in range(bsp._nb_bands):
+                x = data['distances'][d],
+                y = [data['energy'][d][str(Spin.up)][i][j]
+                     for j in range(len(data['distances'][d]))]
+                band = [x, y]
+                bands.append(band)
+
+        considered = []
+        for i in range(len(bands)):
+            for j in range(len(bands)):
+                if i != j and (j, i) not in considered:
+                    considered.append((j, i))
+                    for k in range(len(bands[i][0])):
+                        if -0.1 < bands[i][1][k] < 0.1 and -0.1 < bands[i][1][k] - bands[j][1][k] < 0.1:
+                            dirac = True
+    return dirac
+
