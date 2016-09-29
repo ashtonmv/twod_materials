@@ -178,7 +178,7 @@ def plot_band_alignments(directories, run_type='PBE', fmt='pdf'):
     plt.savefig('band_alignments.{}'.format(fmt), transparent=True)
 
 
-def plot_local_potential(axis=2, fmt='pdf'):
+def plot_local_potential(axis=2, ylim=(-20, 0), fmt='pdf'):
     """
     Plot data from the LOCPOT file along any of the 3 primary axes.
     Useful for determining surface dipole moments and electric
@@ -204,7 +204,7 @@ def plot_local_potential(axis=2, fmt='pdf'):
     ax.plot(positions, potentials, linewidth=2, color='k')
 
     ax.set_xlim(0, axis_length)
-    ax.set_ylim(-20, 0)
+    ax.set_ylim(ylim[0], ylim[1])
 
     ax.set_xticklabels([r'$\mathrm{%s}$' % tick for tick in ax.get_xticks()],
                        size=20)
