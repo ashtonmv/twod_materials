@@ -213,10 +213,15 @@ def plot_local_potential(axis=2, fmt='pdf'):
     ax.set_xlabel(r'$\mathrm{\AA}$', size=24)
     ax.set_ylabel(r'$\mathrm{V\/(eV)}$', size=24)
 
-    ax.fill_between(ax.get_xlim(), cbm, 0, facecolor=plt.cm.jet(0.3),
-                    zorder=0, linewidth=0)
-    ax.fill_between(ax.get_xlim(), -20, vbm, facecolor=plt.cm.jet(0.7),
-                    zorder=0, linewidth=0)
+    ax.text(ax.get_xlim()[1], cbm, horizontalalignment='right',
+            verticalalignment='bottom', r'$\mathrm{CBM}$', size=20)
+    ax.text(ax.get_xlim()[1], vbm, horizontalalignment='right',
+            verticalalignment='top', r'$\mathrm{VBM}$', size=20)
+
+    ax.fill_between(ax.get_xlim(), cbm, ax.get_ylim()[1],
+                    facecolor=plt.cm.jet(0.3), zorder=0, linewidth=0)
+    ax.fill_between(ax.get_xlim(), ax.get_ylim()[0], vbm,
+                    facecolor=plt.cm.jet(0.7), zorder=0, linewidth=0)
 
     plt.savefig('locpot.{}'.format(fmt))
 
@@ -461,4 +466,3 @@ def find_dirac_nodes():
                         if -0.1 < bands[i][1][k] < 0.1 and -0.1 < bands[i][1][k] - bands[j][1][k] < 0.1:
                             dirac = True
     return dirac
-
