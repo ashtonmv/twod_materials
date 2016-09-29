@@ -23,10 +23,35 @@ VASP = loadfn(os.path.join(os.path.expanduser('~'),
                            'config.yaml'))['normal_binary']
 
 
+def write_circle_mesh_kpoints(center=(0, 0, 0), dimension=0.1,
+                              resolution=20):
+    """
+    Create a circular mesh of k-points centered around a specific
+    k-point (defaults to Gamma). `dimension` and `resolution`
+    specify how large and how fine the grid will be. Non-circular
+    meshes are not supported, but shouldn't be too hard to code.
+    All k-point weights are 1.
+    """
+
+    kpoints = []
+    step = dimension / resolution
+
+    for i in range(-resolution, resolution):
+        for j in range(-resolution, resolution):
+            if i**2 + j**2 <= resolution**2:
+                kpoints.append([str(center[0]+step*i), str(center[1]+step*j),
+                '0', '1'])
+    with open('KPOINTS', 'w') as kpts:
+    kpts.write('KPOINTS\n{}\ndirect\n'.format(len(kpoints)))
+    for kpt in kpoints:
+        kpts.write(' '.join(kpt))
+        kpts.write('\n')
+
+
 def remove_z_kpoints(filename='KPOINTS'):
     """
-    Strips all paths from a linemode KPOINTS that include a z-component,
-    since these are not relevant for 2D materials.
+    Strips all paths from a linemode KPOINTS that include a
+    z-component, since these are not relevant for 2D materials.
     """
 
     kpoint_lines = open(filename).readlines()
