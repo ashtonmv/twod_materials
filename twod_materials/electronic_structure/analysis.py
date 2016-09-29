@@ -213,10 +213,10 @@ def plot_local_potential(axis=2, fmt='pdf'):
     ax.set_xlabel(r'$\mathrm{\AA}$', size=24)
     ax.set_ylabel(r'$\mathrm{V\/(eV)}$', size=24)
 
-    ax.text(ax.get_xlim()[1], cbm, horizontalalignment='right',
-            verticalalignment='bottom', size=20, r'$\mathrm{CBM}$')
-    ax.text(ax.get_xlim()[1], vbm, horizontalalignment='right',
-            verticalalignment='top', size=20, r'$\mathrm{VBM}$')
+    ax.text(ax.get_xlim()[1], cbm, r'$\mathrm{CBM}$',
+            horizontalalignment='right', verticalalignment='bottom', size=20)
+    ax.text(ax.get_xlim()[1], vbm, r'$\mathrm{VBM}$',
+            horizontalalignment='right', verticalalignment='top', size=20)
 
     ax.fill_between(ax.get_xlim(), cbm, ax.get_ylim()[1],
                     facecolor=plt.cm.jet(0.3), zorder=0, linewidth=0)
