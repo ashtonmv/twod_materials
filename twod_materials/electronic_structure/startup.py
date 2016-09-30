@@ -43,9 +43,9 @@ def write_circle_mesh_kpoints(center=(0, 0, 0), dimension=0.1,
                 '0', '1'])
     with open('KPOINTS', 'w') as kpts:
         kpts.write('KPOINTS\n{}\ndirect\n'.format(len(kpoints)))
-    for kpt in kpoints:
-        kpts.write(' '.join(kpt))
-        kpts.write('\n')
+        for kpt in kpoints:
+            kpts.write(' '.join(kpt))
+            kpts.write('\n')
 
 
 def remove_z_kpoints(filename='KPOINTS'):
