@@ -42,7 +42,7 @@ def write_circle_mesh_kpoints(center=(0, 0, 0), dimension=0.1,
                 kpoints.append([str(center[0]+step*i), str(center[1]+step*j),
                 '0', '1'])
     with open('KPOINTS', 'w') as kpts:
-    kpts.write('KPOINTS\n{}\ndirect\n'.format(len(kpoints)))
+        kpts.write('KPOINTS\n{}\ndirect\n'.format(len(kpoints)))
     for kpt in kpoints:
         kpts.write(' '.join(kpt))
         kpts.write('\n')
