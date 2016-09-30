@@ -466,3 +466,101 @@ def find_dirac_nodes():
                         if -0.1 < bands[i][1][k] < 0.1 and -0.1 < bands[i][1][k] - bands[j][1][k] < 0.1:
                             dirac = True
     return dirac
+
+
+def plot_spin_texture(inner_index, outer_index, center=(0, 0), fmt='pdf'):
+    """
+    Create six plots- one for the spin texture in x, y, and z in
+    each of two bands: an `inner` band and an `outer` band. For
+    Rashba spin-splitting, these two bands should be the two that
+    have split.
+    """
+
+    procar_lines = open("SrSbSe2F_PROCAR").readlines()
+
+    data = procar_lines[1].split()
+    n_kpts = int(data[3])
+    n_bands = int(data[7])
+    n_ions = int(data[11])
+
+    # These numbers, along with almost everything else in this
+    # function, are magical; don't touch them.
+    band_step = (n_ions + 1) * 4 + 4
+    k_step = n_bands * band_step + 3
+
+    kpoints = []
+    spin_textures = {'inner': {'x': [], 'y': [], 'z': []},
+                     'outer': {'x': [], 'y': [], 'z': []}}
+
+    for n in range(n_kpts):
+        for var in ['x', 'y', 'z']:
+            spin_textures['inner'][var].append(0)
+            spin_textures['outer'][var].append(0)
+
+    i = 3
+    j = 0
+    while i < len(procar_lines):
+        kpoints.append([float(procar_lines[i][18:29]) - center[0],
+                        float(procar_lines[i][29:40]) - center[1]])
+        spin_textures['inner']['x'][j] += float(
+            procar_lines[i+(4+(n_ions+1)*2)+inner_index*band_step].split()[-1]
+        )
+        spin_textures['inner']['y'][j] += float(
+            procar_lines[i+(4+(n_ions+1)*3)+inner_index*band_step].split()[-1]
+        )
+        spin_textures['inner']['z'][j] += float(
+            procar_lines[i+(4+(n_ions+1)*4)+inner_index*band_step].split()[-1]
+        )
+        spin_textures['outer']['x'][j] += float(
+            procar_lines[i+(4+(n_ions+1)*2)+outer_index*band_step].split()[-1]
+        )
+        spin_textures['outer']['y'][j] += float(
+            procar_lines[i+(4+(n_ions+1)*3)+outer_index*band_step].split()[-1]
+        )
+        spin_textures['outer']['z'][j] += float(
+            procar_lines[i+(4+(n_ions+1)*4)+outer_index*band_step].split()[-1]
+        )
+        i += k_step
+        j += 1
+
+    for branch in spin_textures:
+        for vector in spin_textures[branch]:
+            print 'plotting {}_{}.{}'.format(branch, vector, fmt)
+            ax = plt.subplot(111, projection='polar')
+
+            raw = [
+                spin_textures[branch][vector][k] for k in range(len(kpoints))
+            ]
+            minimum = min(raw)
+            maximum = max(raw) - minimum
+
+            r_max = max([np.sqrt(kpt[0]**2 + kpt[1]**2) for kpt in kpoints])
+
+            for l in range(len(kpoints)):
+                if kpoints[l][0] == 0 and kpoints[l][1] > 0:
+                    theta = np.pi / 2.0
+                elif kpoints[l][0] == 0:
+                    theta = 3.0 * np.pi / 2.0
+                elif kpoints[l][0] < 0:
+                    theta = np.pi + np.arctan(kpoints[l][1] / kpoints[l][0])
+                else:
+                    theta = np.arctan(kpoints[l][1] / kpoints[l][0])
+                r = np.sqrt(kpoints[l][0]**2 + kpoints[l][1]**2)
+                if r == 0:
+                    w = 0
+                else:
+                    w = r_max*0.07/r
+                ax.add_patch(
+                    plt.Rectangle(
+                        (theta, r), width=w, height=r_max*0.07,
+                        color=plt.cm.rainbow(
+                            (spin_textures[branch][vector][l]-minimum)/maximum
+                        )
+                    )
+                )
+            ax.plot(0, 0, linewidth=0, marker='o', color='k', markersize=18)
+            ax.set_rmax(r_max)
+            plt.axis('off')
+            plt.savefig('{}_{}.{}'.format(branch, vector, fmt))
+            plt.close()
+
