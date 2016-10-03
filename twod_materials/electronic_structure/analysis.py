@@ -267,8 +267,6 @@ def check_potential_symmetry(axis=2):
             below_potential = potentials[i]
             break
 
-    print above_potential, below_potential
-
     if above_potential - tol < below_potential < above_potential + tol:
         symmetric = True
     else:
