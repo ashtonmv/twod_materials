@@ -226,6 +226,57 @@ def plot_local_potential(axis=2, ylim=(-20, 0), fmt='pdf'):
     plt.savefig('locpot.{}'.format(fmt))
 
 
+def check_potential_symmetry(axis=2):
+    """
+    Checks if the local potential ~3 angstroms above and ~3 angstroms
+    below a 2D material are equal (within a tolerance `tol`). This
+    is one way to identify asymmetric materials for piezoelectricity
+    or Rashba spin splitting.
+    """
+
+    tol = 0.1
+
+    locpot = Locpot.from_file('LOCPOT')
+    structure = Structure.from_file('CONTCAR')
+    vd = VolumetricData(structure, locpot.data)
+    potentials = vd.get_average_along_axis(axis)
+
+    axis_length = structure.lattice._lengths[axis]
+    positions = np.arange(0, axis_length, axis_length / len(potentials))
+
+    if axis == 2:
+        coordinates = [site.z for site in structure.sites]
+    elif axis == 1:
+        coordinates = [site.y for site in structure.sites]
+    elif axis == 0:
+        coordinates = [site.x for site in structure.sites]
+    above_layer = max(coordinates)
+    below_layer = min(coordinates)
+
+    if above_layer + 3.1 > axis_length:
+        above_layer = 0
+    elif below_layer < 3.1:
+        below_layer = axis_length
+
+    for i in range(len(positions)):
+        if above_layer + 3.0 < positions[i] < above_layer + 3.1:
+            above_potential = potentials[i]
+            break
+    for i in range(len(positions)):
+        if below_layer - 3.0 > positions[i] > below_layer - 3.1:
+            below_potential = potentials[i]
+            break
+
+    print above_potential, below_potential
+
+    if above_potential - tol < below_potential < above_potential + tol:
+        symmetric = True
+    else:
+        symmetric = False
+
+    return symmetric
+
+
 def plot_band_structure(fmt='pdf', ylim=(-5, 5)):
     """
     Plot a standard band structure with no projections.
@@ -563,4 +614,3 @@ def plot_spin_texture(inner_index, outer_index, center=(0, 0), fmt='pdf'):
             plt.axis('off')
             plt.savefig('{}_{}.{}'.format(branch, vector, fmt))
             plt.close()
-
