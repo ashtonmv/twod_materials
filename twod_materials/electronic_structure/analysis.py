@@ -37,24 +37,18 @@ def plot_band_alignments(directories, run_type='PBE', fmt='pdf'):
     for directory in directories:
         if is_converged('{}/{}'.format(directory, subdirectory)):
             os.chdir('{}/{}'.format(directory, subdirectory))
-            vasprun = Vasprun('vasprun.xml')
-            band_gap = vasprun.get_band_structure().get_band_gap()
+            band_structure = Vasprun('vasprun.xml').get_band_structure()
+            band_gap = band_structure.get_band_gap()
 
             # Vacuum level energy from LOCPOT.
             locpot = Locpot.from_file('LOCPOT')
-            evac = locpot.get_average_along_axis(2)[-5]
+            evac = max(locpot.get_average_along_axis(2))
 
             try:
-                transition = band_gap['transition'].split('-')
-
-                if transition[0] == transition[1]:
-                    is_direct = True
-                else:
-                    is_direct = False
-
                 is_metal = False
-                cbm = vasprun.get_band_structure().get_cbm()
-                vbm = vasprun.get_band_structure().get_vbm()
+                is_direct = band_gap['direct']
+                cbm = band_structure.get_cbm()
+                vbm = band_structure.get_vbm()
 
             except AttributeError:
                 cbm = None
@@ -63,8 +57,8 @@ def plot_band_alignments(directories, run_type='PBE', fmt='pdf'):
                 is_direct = False
 
             band_gaps[directory] = {'CBM': cbm, 'VBM': vbm,
-                                    'Direct': is_direct, 'Metal': is_metal,
-                                    'E_vac': evac}
+                                    'Direct': is_direct,
+                                    'Metal': is_metal, 'E_vac': evac}
 
             os.chdir('../../')
 
