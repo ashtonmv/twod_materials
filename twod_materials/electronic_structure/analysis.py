@@ -574,7 +574,7 @@ def plot_spin_texture(inner_index, outer_index, center=(0, 0), fmt='pdf'):
 
     for branch in spin_textures:
         for vector in spin_textures[branch]:
-            print 'plotting {}_{}.{}'.format(branch, vector, fmt)
+            print('plotting {}_{}.{}'.format(branch, vector, fmt))
             ax = plt.subplot(111, projection='polar')
 
             raw = [
