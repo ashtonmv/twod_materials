@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from pymatgen.core.structure import Structure
+from pymatgen.core.operations import SymmOp
 from pymatgen.io.vasp.outputs import Vasprun, Locpot, VolumetricData
 from pymatgen.io.vasp.inputs import Incar
 from pymatgen.electronic_structure.plotter import BSPlotter, BSPlotterProjected
@@ -170,6 +171,7 @@ def plot_band_alignments(directories, run_type='PBE', fmt='pdf'):
     ax.set_ylabel('eV', family='serif', size=24)
 
     plt.savefig('band_alignments.{}'.format(fmt), transparent=True)
+    plt.close()
 
 
 def plot_local_potential(axis=2, ylim=(-20, 0), fmt='pdf'):
@@ -218,53 +220,60 @@ def plot_local_potential(axis=2, ylim=(-20, 0), fmt='pdf'):
                     facecolor=plt.cm.jet(0.7), zorder=0, linewidth=0)
 
     plt.savefig('locpot.{}'.format(fmt))
+    plt.close()
 
 
-def check_potential_symmetry(axis=2):
+def check_centrosymmetry(axis=2):
     """
-    Checks if the local potential ~3 angstroms above and ~3 angstroms
-    below a 2D material are equal (within a tolerance `tol`). This
-    is one way to identify asymmetric materials for piezoelectricity
-    or Rashba spin splitting.
+    Checks if a 2D material has centrosymmetry along a given axis.
     """
 
-    tol = 0.1
-
-    locpot = Locpot.from_file('LOCPOT')
     structure = Structure.from_file('CONTCAR')
-    vd = VolumetricData(structure, locpot.data)
-    potentials = vd.get_average_along_axis(axis)
 
-    axis_length = structure.lattice._lengths[axis]
-    positions = np.arange(0, axis_length, axis_length / len(potentials))
+    min_site = min([site.coords[axis] for site in structure.sites])
 
     if axis == 2:
-        coordinates = [site.z for site in structure.sites]
+        tv = (0, 0, structure.lattice.c / 2)
     elif axis == 1:
-        coordinates = [site.y for site in structure.sites]
+        tv = (0, structure.lattice.b / 2, 0)
     elif axis == 0:
-        coordinates = [site.x for site in structure.sites]
-    above_layer = max(coordinates)
-    below_layer = min(coordinates)
+        tv = (structure.lattice.a / 2, 0, 0)
 
-    if above_layer + 3.1 > axis_length:
-        above_layer = 0
-    elif below_layer < 3.1:
-        below_layer = axis_length
+    operation = SymmOp.from_rotation_and_translation(translation_vec=tv)
+    structure.apply_operation(operation)
+    coordinates = []
+    for site in structure.sites:
+        if site._fcoords[axis] > 1 and axis == 2:
+            coordinates.append(site.coords[axis] - structure.lattice.c)
+        elif site._fcoords[axis] > 1 and axis == 1:
+            coordinates.append(site.coords[axis] - structure.lattice.b)
+        elif site._fcoords[axis] > 1 and axis == 0:
+            coordinates.append(site.coords[axis] - structure.lattice.a)
+        else:
+            coordinates.append(site.coords[axis])
 
-    for i in range(len(positions)):
-        if above_layer + 3.0 < positions[i] < above_layer + 3.1:
-            above_potential = potentials[i]
+    max_site = max(coordinates)
+    min_site = min(coordinates)
+
+    data = {}
+
+    center = min_site + (max_site - min_site) / 2
+    for c in coordinates:
+        coordinate = round(c - center, 1)
+        if coordinate not in data:
+            data[coordinate] = [site.species_string]
+        else:
+            data[coordinate] += site.species_string
+
+    for coordinate in data:
+        if -coordinate not in data:
+            symmetric = 'broken'
             break
-    for i in range(len(positions)):
-        if below_layer - 3.0 > positions[i] > below_layer - 3.1:
-            below_potential = potentials[i]
+        elif data[coordinate] != data[-coordinate]:
+            symmetric = False
             break
-
-    if above_potential - tol < below_potential < above_potential + tol:
-        symmetric = True
     else:
-        symmetric = False
+        symmetric = True
 
     return symmetric
 
@@ -280,6 +289,7 @@ def plot_band_structure(fmt='pdf', ylim=(-5, 5)):
                                                efermi=efermi))
     plot = bsp.get_plot(ylim=ylim)
     plot.savefig('band_structure.{}'.format(fmt))
+    plt.close()
 
 
 def plot_color_projected_bands(fmt='pdf', ylim=(-5, 5)):
@@ -293,6 +303,7 @@ def plot_color_projected_bands(fmt='pdf', ylim=(-5, 5)):
     bspp = BSPlotterProjected(bs)
     bspp.get_elt_projected_plots_color(ylim=ylim).savefig(
         'color_projected_bands.{}'.format(fmt))
+    plt.close()
 
 
 def plot_elt_projected_bands(fmt='pdf', ylim=(-5, 5)):
@@ -306,6 +317,7 @@ def plot_elt_projected_bands(fmt='pdf', ylim=(-5, 5)):
     bspp = BSPlotterProjected(bs)
     bspp.get_elt_projected_plots(ylim=ylim).savefig(
         'elt_projected_bands.{}'.format(fmt))
+    plt.close()
 
 
 def plot_orb_projected_bands(orbitals, fmt='pdf', ylim=(-5, 5)):
@@ -322,6 +334,7 @@ def plot_orb_projected_bands(orbitals, fmt='pdf', ylim=(-5, 5)):
     bspp = BSPlotterProjected(bs)
     bspp.get_projected_plots_dots(orbitals, ylim=ylim).savefig(
         'orb_projected_bands.{}'.format(fmt))
+    plt.close()
 
 
 def get_effective_mass():
@@ -477,6 +490,7 @@ def plot_density_of_states(fmt='pdf'):
     ax.plot(x, down, color='green')
     ax.plot(x, sum, color='black' )
     plt.savefig('density_of_states.{}'.format(fmt))
+    plt.close()
 
 
 def find_dirac_nodes():
