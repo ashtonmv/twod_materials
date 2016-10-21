@@ -507,15 +507,19 @@ def write_slurm_runjob(name, ntasks, pmem, walltime, binary):
     binary. Designed for runjobs on the Hennig group_list on HiperGator
     1 (PBS).
     """
+
+    nnodes = np.ceil(float(ntasks) / 32.0)
+
     runjob = open('runjob', 'w')
     runjob.write('#!/bin/bash\n')
     runjob.write('#SBATCH --job-name={}\n'.format(name))
     runjob.write('#SBATCH -o out_%j.log\n')
     runjob.write('#SBATCH -e err_%j.log\n')
     runjob.write('#SBATCH --qos=hennig-b\n')
+    runjob.write('#SBATCH --nodes={}\n'.format(nnodes))
     runjob.write('#SBATCH --ntasks={}\n'.format(ntasks))
-    runjob.write('#SBATCH --mem-per-cpu={}\n\n'.format(pmem))
-    runjob.write('#SBATCH -t {}\n'.format(walltime))
+    runjob.write('#SBATCH --mem-per-cpu={}\n'.format(pmem))
+    runjob.write('#SBATCH -t {}\n\n'.format(walltime))
     runjob.write('cd $SLURM_SUBMIT_DIR\n\n')
     runjob.write('module load intel/2016.0.109\n')
     runjob.write('module load openmpi/1.10.1\n')
