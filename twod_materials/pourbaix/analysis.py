@@ -28,11 +28,11 @@ import twod_materials
 
 PACKAGE_PATH = twod_materials.__file__.replace('__init__.pyc', '')
 PACKAGE_PATH = PACKAGE_PATH.replace('__init__.py', '')
-PACKAGE_PATH = '/home/mashton/group_IV_oxides'
 
-ION_DATA = loadfn(os.path.join(PACKAGE_PATH, 'ions.yaml'))
-END_MEMBERS = loadfn(os.path.join(PACKAGE_PATH, 'end_members.yaml'))
-ION_COLORS = loadfn(os.path.join(PACKAGE_PATH, 'ion_colors.yaml'))
+
+ION_DATA = loadfn(os.path.join(PACKAGE_PATH, 'pourbaix/ions.yaml'))
+END_MEMBERS = loadfn(os.path.join(PACKAGE_PATH, 'pourbaix/end_members.yaml'))
+ION_COLORS = loadfn(os.path.join(PACKAGE_PATH, 'pourbaix/ion_colors.yaml'))
 
 
 def contains_entry(entry_list, entry):
@@ -63,10 +63,7 @@ def plot_pourbaix_diagram(metastability=0.0, ion_concentration=1e-6, fmt='pdf'):
     composition = Structure.from_file('POSCAR').composition
     energy = Vasprun('vasprun.xml').final_energy
 
-    si_composition = {'Si': 2}
-
     cmpd = ComputedEntry(composition, energy)
-    si_cmpd = ComputedEntry(si_composition, 0)
 
     # Define the chemsys that describes the 2D compound.
     chemsys = ['O', 'H'] + [elt.symbol for elt in composition.elements
@@ -87,23 +84,19 @@ def plot_pourbaix_diagram(metastability=0.0, ion_concentration=1e-6, fmt='pdf'):
 
     # Add "correction" for metastability
     cmpd.correction -= float(cmpd.composition.num_atoms)\
-        * float(metastability)/1000.0
+        * float(metastability) / 1000.0
 
     # Calculate formation energy of the compound from its end
     # members
     form_energy = cmpd.energy
     for elt in composition.as_dict():
         form_energy -= END_MEMBERS[elt] * cmpd.composition[elt]
-    si_form_energy = 0
 
     # Convert the compound entry to a pourbaix entry.
     # Default concentration for solid entries = 1
     pbx_cmpd = PourbaixEntry(cmpd)
-    pbx_si = PourbaixEntry(si_cmpd)
     pbx_cmpd.g0_replace(form_energy)
-    pbx_si.g0_replace(0)
     pbx_cmpd.reduced_entry()
-    pbx_si.reduced_entry()
 
     # Add corrected ionic entries to the pourbaix diagram
     # dft corrections for experimental ionic energies:
@@ -133,7 +126,7 @@ def plot_pourbaix_diagram(metastability=0.0, ion_concentration=1e-6, fmt='pdf'):
     # g = g0_ref + 0.0591 * log10(conc) - nO * mu_H2O +
     # (nH - 2nO) * pH + phi * (-nH + 2nO + q)
 
-    all_entries = [pbx_cmpd, pbx_si] + pbx_ion_entries
+    all_entries = [pbx_cmpd] + pbx_ion_entries
 
     pourbaix = PourbaixDiagram(all_entries)
 
@@ -156,7 +149,7 @@ def plot_pourbaix_diagram(metastability=0.0, ion_concentration=1e-6, fmt='pdf'):
         if entry == pbx_cmpd:
             col = plt.cm.Blues(0)
         else:
-            col = plt.cm.jet(float(
+            col = plt.cm.rainbow(float(
                 ION_COLORS[entry.composition.reduced_formula]))
 
         vertices = plotter.domain_vertices(entry)
