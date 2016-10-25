@@ -122,7 +122,7 @@ def run_hse_calculation(submit=True, force_overwrite=False):
                       'ALGO': 'D', 'TIME': 0.4, 'NSW': 0,
                       'LVTOT': True, 'LVHAR': True, 'LORBIT': 11,
                       'LWAVE': True, 'NPAR': 8, 'PREC': 'Accurate',
-                      'EDIFF': 1e-6, 'ENCUT': 500, 'ICHARG': 11, 'ISMEAR': 1,
+                      'EDIFF': 1e-6, 'ENCUT': 500, 'ICHARG': 2, 'ISMEAR': 1,
                       'SIGMA': 0.1, 'IBRION': 2, 'ISIF': 3, 'ISPIN': 2}
 
     if not os.path.isdir('hse_bands'):
@@ -131,7 +131,6 @@ def run_hse_calculation(submit=True, force_overwrite=False):
         os.chdir('hse_bands')
         os.system('cp ../CONTCAR ./POSCAR')
         os.system('cp ../POTCAR ./')
-        os.system('cp ../CHGCAR ./')
         HSE_INCAR_DICT.update({'MAGMOM': get_magmom_string()})
         Incar.from_dict(HSE_INCAR_DICT).write_file('INCAR')
 
