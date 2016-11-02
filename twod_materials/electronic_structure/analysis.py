@@ -13,9 +13,36 @@ from pymatgen.core.operations import SymmOp
 from pymatgen.io.vasp.outputs import Vasprun, Locpot, VolumetricData
 from pymatgen.io.vasp.inputs import Incar
 from pymatgen.electronic_structure.plotter import BSPlotter, BSPlotterProjected
+from pymatgen.electronic_structure.bandstructure import BandStructure
 from pymatgen.electronic_structure.core import Spin
 
 from twod_materials.utils import is_converged
+
+
+def get_band_edges():
+    """
+    Calculate the band edge locations relative to the vacuum level
+    for a semiconductor.
+    """
+
+    # Vacuum level energy from LOCPOT.
+    locpot = Locpot.from_file('LOCPOT')
+    evac = max(locpot.get_average_along_axis(2))
+
+    vasprun = Vasprun('vasprun.xml')
+    efermi = vasprun.efermi - evac
+
+    eigenvals = {Spin.up: [], Spin.down: []}
+    for band in vasprun.eigenvalues:
+        for eigenvalue in vasprun.eigenvalues[band]:
+            eigenvals[band[0]].append(eigenvalue)
+
+    up_cbm = min([e[0] for e in eigenvals[Spin.up] if not e[1]]) - evac
+    up_vbm = max([e[0] for e in eigenvals[Spin.up] if e[1]]) - evac
+    dn_cbm = min([e[0] for e in eigenvals[Spin.down] if not e[1]]) - evac
+    dn_vbm = max([e[0] for e in eigenvals[Spin.down] if e[1]]) - evac
+
+    return [up_cbm, up_vbm, dn_cbm, dn_vbm, efermi]
 
 
 def plot_band_alignments(directories, run_type='PBE', fmt='pdf'):
@@ -230,48 +257,44 @@ def check_centrosymmetry(axis=2):
 
     structure = Structure.from_file('CONTCAR')
 
-    min_site = min([site.coords[axis] for site in structure.sites])
-
-    if axis == 2:
-        tv = (0, 0, structure.lattice.c / 2)
-    elif axis == 1:
-        tv = (0, structure.lattice.b / 2, 0)
-    elif axis == 0:
-        tv = (structure.lattice.a / 2, 0, 0)
-
-    operation = SymmOp.from_rotation_and_translation(translation_vec=tv)
-    structure.apply_operation(operation)
-    coordinates = []
+    min_z = 1
     for site in structure.sites:
-        if site._fcoords[axis] > 1 and axis == 2:
-            coordinates.append(site.coords[axis] - structure.lattice.c)
-        elif site._fcoords[axis] > 1 and axis == 1:
-            coordinates.append(site.coords[axis] - structure.lattice.b)
-        elif site._fcoords[axis] > 1 and axis == 0:
-            coordinates.append(site.coords[axis] - structure.lattice.a)
+        if site._fcoords[2] > 0.9:
+            height = site._fcoords[2] - 1
         else:
-            coordinates.append(site.coords[axis])
+            height = site._fcoords[2]
+        if height < min_z:
+            min_z = height
 
-    max_site = max(coordinates)
-    min_site = min(coordinates)
+    translation = SymmOp.from_rotation_and_translation(
+        translation_vec=(0, 0, -min_z))
+    structure.apply_operation(translation, fractional=True)
+    structure.to(filename='POSCAR_tmp', format='POSCAR')
 
-    data = {}
-
+    structure = Structure.from_file('POSCAR_tmp')
+    os.system('rm POSCAR_tmp')
+    max_site = max([site._fcoords[2] for site in structure.sites])
+    min_site = min([site._fcoords[2] for site in structure.sites])
     center = min_site + (max_site - min_site) / 2
-    for c in coordinates:
-        coordinate = round(c - center, 1)
-        if coordinate not in data:
-            data[coordinate] = [site.species_string]
-        else:
-            data[coordinate] += site.species_string
 
-    for coordinate in data:
-        if -coordinate not in data:
-            symmetric = 'broken'
-            break
-        elif data[coordinate] != data[-coordinate]:
+    above_sites, below_sites = [], []
+    for site in structure.sites:
+        if site._fcoords[2] > center + 0.1:
+            above_sites.append(site)
+        elif site._fcoords[2] < center - 0.1:
+            below_sites.append(site)
+
+    if len(above_sites) and len(below_sites):
+        above_comp = Structure.from_sites(above_sites).composition
+        below_comp = Structure.from_sites(below_sites).composition
+
+        if above_comp == below_comp:
+            symmetric = True
+        else:
             symmetric = False
-            break
+            print(above_sites, '\n------\n', below_sites)
+    elif len(above_sites) or len(below_sites):
+        symmetric = False
     else:
         symmetric = True
 
@@ -288,7 +311,10 @@ def plot_band_structure(fmt='pdf', ylim=(-5, 5)):
     bsp = BSPlotter(vasprun.get_band_structure('KPOINTS', line_mode=True,
                                                efermi=efermi))
     plot = bsp.get_plot(ylim=ylim)
-    plot.savefig('band_structure.{}'.format(fmt))
+    fig = plot.gcf()
+#    fig.gca().plot([fig.gca().get_xlim()[0], fig.gca().get_xlim()[1]], [0, 0], 'k--')
+#    fig.set_size_inches(5, 9)
+    fig.savefig('band_structure.{}'.format(fmt), transparent=True)
     plt.close()
 
 

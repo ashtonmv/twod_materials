@@ -13,11 +13,19 @@ from pymatgen.core.structure import Structure
 
 from monty.serialization import loadfn
 
+import numpy as np
+
+import itertools as it
+
+import math
+
 
 if '/ufrc/' in os.getcwd():
     HIPERGATOR = 2
 elif '/scratch/' in os.getcwd():
     HIPERGATOR = 1
+else:
+    HIPERGATOR = None
 
 VASP = loadfn(os.path.join(os.path.expanduser('~'),
                            'config.yaml'))['normal_binary']
@@ -48,26 +56,68 @@ def write_circle_mesh_kpoints(center=(0, 0, 0), dimension=0.1,
             kpts.write('\n')
 
 
-def remove_z_kpoints(filename='KPOINTS'):
+def get_markovian_path(points):
+    def dist(x,y):
+        return math.hypot(y[0] - x[0], y[1] - x[1])
+
+    paths = [p for p in it.permutations(points)]
+    path_distances = [
+        sum(map(lambda x: dist(x[0], x[1]), zip(p[:-1], p[1:]))) for p in paths
+    ]
+    min_index = np.argmin(path_distances)
+
+    return paths[min_index]
+
+
+def remove_z_kpoints(filename='test_KPOINTS'):
     """
-    Strips all paths from a linemode KPOINTS that include a
+    Strips all k-points linemode KPOINTS that include a
     z-component, since these are not relevant for 2D materials.
+    Then re-computes the markovian path between the remaining
+    2D points and writes it over the KPOINTS file.
     """
 
-    kpoint_lines = open(filename).readlines()
+    kpoint_lines = open('KPOINTS').readlines()
+
+    twod_kpoints = []
+    labels = {}
+    i = 4
+
+    while i < len(kpoint_lines):
+        kpt_1 = kpoint_lines[i].split()
+        kpt_2 = kpoint_lines[i+1].split()
+        if float(kpt_1[2]) == 0.0 and [float(kpt_1[0]), float(kpt_1[1])] not in twod_kpoints:
+            twod_kpoints.append(
+                [float(kpt_1[0]), float(kpt_1[1])]
+            )
+            labels[kpt_1[4]] = [float(kpt_1[0]), float(kpt_1[1])]
+
+        if float(kpt_2[2]) == 0.0 and [float(kpt_2[0]), float(kpt_2[1])] not in twod_kpoints:
+            twod_kpoints.append(
+                [float(kpt_2[0]), float(kpt_2[1])]
+            )
+            labels[kpt_2[4]] = [float(kpt_2[0]), float(kpt_2[1])]
+        i += 3
+
+    kpath = get_markovian_path(twod_kpoints)
+
     with open(filename, 'w') as kpts:
         for line in kpoint_lines[:4]:
             kpts.write(line)
-        i = 4
-        while i < len(kpoint_lines):
-            if (
-                not float(kpoint_lines[i].split()[2]) and
-                not float(kpoint_lines[i+1].split()[2])
-                    ):
-                kpts.write(kpoint_lines[i])
-                kpts.write(kpoint_lines[i+1])
-                kpts.write('\n')
-            i += 3
+
+        for i in range(len(kpath)):
+            label_1 = [l for l in labels if labels[l] == kpath[i]][0]
+            if i == len(kpath) - 1:
+                kpt_2 = kpath[0]
+                label_2 = [l for l in labels if labels[l] == kpath[0]][0]
+            else:
+                kpt_2 = kpath[i+1]
+                label_2 = [l for l in labels if labels[l] == kpath[i+1]][0]
+
+            kpts.write(' '.join([str(kpath[i][0]), str(kpath[i][1]), '0.0 !', label_1]))
+            kpts.write('\n')
+            kpts.write(' '.join([str(kpt_2[0]), str(kpt_2[1]), '0.0 !', label_2]))
+            kpts.write('\n\n')
 
 
 def run_linemode_calculation(submit=True, force_overwrite=False):
