@@ -22,7 +22,7 @@ from twod_materials.utils import is_converged
 def get_band_edges():
     """
     Calculate the band edge locations relative to the vacuum level
-    for a semiconductor.
+    for a semiconductor. If spin-polarized, returns all 4 band edges.
     """
 
     # Vacuum level energy from LOCPOT.
@@ -32,17 +32,25 @@ def get_band_edges():
     vasprun = Vasprun('vasprun.xml')
     efermi = vasprun.efermi - evac
 
-    eigenvals = {Spin.up: [], Spin.down: []}
-    for band in vasprun.eigenvalues:
-        for eigenvalue in vasprun.eigenvalues[band]:
-            eigenvals[band[0]].append(eigenvalue)
+    if vasprun.get_band_structure().is_spin_polarized:
+        eigenvals = {Spin.up: [], Spin.down: []}
+        for band in vasprun.eigenvalues:
+            for eigenvalue in vasprun.eigenvalues[band]:
+                eigenvals[band[0]].append(eigenvalue)
 
-    up_cbm = min([e[0] for e in eigenvals[Spin.up] if not e[1]]) - evac
-    up_vbm = max([e[0] for e in eigenvals[Spin.up] if e[1]]) - evac
-    dn_cbm = min([e[0] for e in eigenvals[Spin.down] if not e[1]]) - evac
-    dn_vbm = max([e[0] for e in eigenvals[Spin.down] if e[1]]) - evac
+        up_cbm = min([e[0] for e in eigenvals[Spin.up] if not e[1]]) - evac
+        up_vbm = max([e[0] for e in eigenvals[Spin.up] if e[1]]) - evac
+        dn_cbm = min([e[0] for e in eigenvals[Spin.down] if not e[1]]) - evac
+        dn_vbm = max([e[0] for e in eigenvals[Spin.down] if e[1]]) - evac
+        edges = {'up_cbm': up_cbm, 'up_vbm': up_vbm, 'dn_cbm': dn_cbm,
+                 'dn_vbm': dn_vbm, 'efermi': efermi}
 
-    return [up_cbm, up_vbm, dn_cbm, dn_vbm, efermi]
+    else:
+        cbm = min([e[0] for e in eigenvals[Spin.up] if not e[1]]) - evac
+        vbm = max([e[0] for e in eigenvals[Spin.up] if e[1]]) - evac
+        edges = {'cbm': cbm, 'vbm': vbm, 'efermi': efermi}
+
+    return edges
 
 
 def plot_band_alignments(directories, run_type='PBE', fmt='pdf'):
@@ -250,58 +258,7 @@ def plot_local_potential(axis=2, ylim=(-20, 0), fmt='pdf'):
     plt.close()
 
 
-def check_centrosymmetry(axis=2):
-    """
-    Checks if a 2D material has centrosymmetry along a given axis.
-    """
-
-    structure = Structure.from_file('CONTCAR')
-
-    min_z = 1
-    for site in structure.sites:
-        if site._fcoords[2] > 0.9:
-            height = site._fcoords[2] - 1
-        else:
-            height = site._fcoords[2]
-        if height < min_z:
-            min_z = height
-
-    translation = SymmOp.from_rotation_and_translation(
-        translation_vec=(0, 0, -min_z))
-    structure.apply_operation(translation, fractional=True)
-    structure.to(filename='POSCAR_tmp', format='POSCAR')
-
-    structure = Structure.from_file('POSCAR_tmp')
-    os.system('rm POSCAR_tmp')
-    max_site = max([site._fcoords[2] for site in structure.sites])
-    min_site = min([site._fcoords[2] for site in structure.sites])
-    center = min_site + (max_site - min_site) / 2
-
-    above_sites, below_sites = [], []
-    for site in structure.sites:
-        if site._fcoords[2] > center + 0.1:
-            above_sites.append(site)
-        elif site._fcoords[2] < center - 0.1:
-            below_sites.append(site)
-
-    if len(above_sites) and len(below_sites):
-        above_comp = Structure.from_sites(above_sites).composition
-        below_comp = Structure.from_sites(below_sites).composition
-
-        if above_comp == below_comp:
-            symmetric = True
-        else:
-            symmetric = False
-            print(above_sites, '\n------\n', below_sites)
-    elif len(above_sites) or len(below_sites):
-        symmetric = False
-    else:
-        symmetric = True
-
-    return symmetric
-
-
-def plot_band_structure(fmt='pdf', ylim=(-5, 5)):
+def plot_band_structure(fmt='pdf', ylim=(-5, 5), draw_fermi=False):
     """
     Plot a standard band structure with no projections.
     """
@@ -312,8 +269,9 @@ def plot_band_structure(fmt='pdf', ylim=(-5, 5)):
                                                efermi=efermi))
     plot = bsp.get_plot(ylim=ylim)
     fig = plot.gcf()
-#    fig.gca().plot([fig.gca().get_xlim()[0], fig.gca().get_xlim()[1]], [0, 0], 'k--')
-#    fig.set_size_inches(5, 9)
+    if draw_fermi:
+        fig.gca().plot([fig.gca().get_xlim()[0], fig.gca().get_xlim()[1]],
+                       [0, 0], 'k--')
     fig.savefig('band_structure.{}'.format(fmt), transparent=True)
     plt.close()
 

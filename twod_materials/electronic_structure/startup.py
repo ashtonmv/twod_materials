@@ -57,6 +57,11 @@ def write_circle_mesh_kpoints(center=(0, 0, 0), dimension=0.1,
 
 
 def get_markovian_path(points):
+    """
+    Calculates the shortest path connecting an array of 2D
+    points. Returns the points in order on that path.
+    """
+
     def dist(x,y):
         return math.hypot(y[0] - x[0], y[1] - x[1])
 
