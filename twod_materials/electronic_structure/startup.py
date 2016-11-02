@@ -74,7 +74,7 @@ def get_markovian_path(points):
     return paths[min_index]
 
 
-def remove_z_kpoints(filename='test_KPOINTS'):
+def remove_z_kpoints(filename='KPOINTS'):
     """
     Strips all k-points linemode KPOINTS that include a
     z-component, since these are not relevant for 2D materials.
@@ -82,7 +82,7 @@ def remove_z_kpoints(filename='test_KPOINTS'):
     2D points and writes it over the KPOINTS file.
     """
 
-    kpoint_lines = open('KPOINTS').readlines()
+    kpoint_lines = open(filename).readlines()
 
     twod_kpoints = []
     labels = {}
