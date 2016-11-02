@@ -194,9 +194,9 @@ def run_hse_calculation(submit=True, force_overwrite=False):
         ibz_lines = open('../IBZKPT').readlines()
         n_ibz_kpts = int(ibz_lines[1].split()[0])
         kpath = HighSymmKpath(Structure.from_file('POSCAR'))
-        Kpoints.automatic_linemode(20, kpath).write_file('linemode_KPOINTS')
-        remove_z_kpoints(filename='linemode_KPOINTS')
-        linemode_lines = open('linemode_KPOINTS').readlines()
+        Kpoints.automatic_linemode(20, kpath).write_file('KPOINTS')
+        remove_z_kpoints(output='KPOINTS')
+        linemode_lines = open('KPOINTS').readlines()
 
         abs_path = []
         i = 4
@@ -242,7 +242,5 @@ def run_hse_calculation(submit=True, force_overwrite=False):
 
         if submit:
             os.system(submission_command)
-
-        os.system('rm linemode_KPOINTS')
 
         os.chdir('../')
