@@ -5,7 +5,7 @@ import os
 from twod_materials.utils import (
     is_converged, write_pbs_runjob,
     write_slurm_runjob)
-from twod_materials.stability.startup import get_magmom_string
+from twod_materials.stability.startup import get_magmom_string, relax
 
 from pymatgen.io.vasp.inputs import Kpoints, Incar
 from pymatgen.symmetry.bandstructure import HighSymmKpath
@@ -165,12 +165,54 @@ def run_linemode_calculation(submit=True, force_overwrite=False):
         os.chdir('../')
 
 
-def run_hse_calculation(submit=True, force_overwrite=False):
+def run_hse_prep_calculation(submit=True):
+    """
+    Submits a quick static calculation to calculate the IBZKPT
+    file using a smaller number of k-points (200/atom instead of
+    1000/atom). The other outputs from this calculation are
+    essentially useless.
+    """
+
+    if not os.path.isdir('hse_prep'):
+        os.mkdir('hse_prep')
+    os.chdir('hse_prep')
+    os.system('cp ../CONTCAR ./POSCAR')
+    relax(submit=False)
+    incar_dict = Incar.from_file('INCAR').as_dict()
+    incar_dict.update({'NSW': 0, 'NELM': 1, 'LWAVE': False, 'LCHARG': False,
+                       'LAECHG': False})
+    Incar.from_dict(incar_dict).write_file('INCAR')
+
+    Kpoints.automatic_density(
+        Structure.from_file('POSCAR'), 200
+    ).write_file('KPOINTS')
+
+    kpts_lines = open('KPOINTS').readlines()
+
+    with open('KPOINTS', 'w') as kpts:
+        for line in kpts_lines[:3]:
+            kpts.write(line)
+        kpts.write(kpts_lines[3].split()[0] + ' '
+                   + kpts_lines[3].split()[1] + ' 1')
+
+    if submit and HIPERGATOR == 1:
+        os.system('qsub runjob')
+
+    elif submit and HIPERGATOR == 2:
+        os.system('sbatch runjob')
+
+
+def run_hse_calculation(submit=True, force_overwrite=False,
+                        destroy_prep_directory=False):
     """
     Setup/submit an HSE06 calculation to get an accurate band structure.
     Requires a previous WAVECAR and IBZKPT from a standard DFT run. See
     http://cms.mpi.univie.ac.at/wiki/index.php/Si_bandstructure for more
     details.
+
+    destroy_prep_directory=True will `rm -r` the hse_prep directory, if
+    it exists. This can help you to automatically clean up and save
+    space.
     """
 
     HSE_INCAR_DICT = {'LHFCALC': True, 'HFSCREEN': 0.2, 'AEXX': 0.25,
@@ -191,7 +233,13 @@ def run_hse_calculation(submit=True, force_overwrite=False):
 
         # Re-use the irreducible brillouin zone KPOINTS from a
         # previous standard DFT run.
-        ibz_lines = open('../IBZKPT').readlines()
+        if os.path.isdir('../hse_prep'):
+            ibz_lines = open('../hse_prep/IBZKPT').readlines()
+            if destroy_prep_directory:
+                os.system('rm -r ../hse_prep')
+        else:
+            ibz_lines = open('../IBZKPT').readlines()
+
         n_ibz_kpts = int(ibz_lines[1].split()[0])
         kpath = HighSymmKpath(Structure.from_file('POSCAR'))
         Kpoints.automatic_linemode(20, kpath).write_file('KPOINTS')
