@@ -508,7 +508,7 @@ def write_slurm_runjob(name, ntasks, pmem, walltime, binary):
     1 (PBS).
     """
 
-    nnodes = np.ceil(float(ntasks) / 32.0)
+    nnodes = int(np.ceil(float(ntasks) / 32.0))
 
     runjob = open('runjob', 'w')
     runjob.write('#!/bin/bash\n')
