@@ -20,16 +20,20 @@ import warnings
 
 def plot_gamma_surface(fmt='pdf'):
     """
-    Collect the energies along a 10x10 grid of static energy
+    Collect the energies from a grid of static energy
     calculations to plot the Gamma surface between two layers of the 2D
     material.
     """
 
+    static_dirs = [
+        d for d in os.listdir(os.getcwd()) if 'x' in d and len(d) == 3
+    ]
+
+    n_divs_x = max([int(d[0]) for d in static_dirs])
+    n_divs_y = max([int(d[1]) for d in static_dirs])
+
     lattice = Structure.from_file('CONTCAR').lattice
     area = np.cross(lattice._matrix[0], lattice._matrix[1])[2]
-
-    n_divs_x = int(math.ceil(lattice.a * 2.5))
-    n_divs_y = int(math.ceil(lattice.b * 2.5))
 
     ax = plt.figure(figsize=(n_divs_x * 1.2, n_divs_y * 1.2)).gca()
 
@@ -106,11 +110,13 @@ def get_basin_and_peak_locations():
     the minimum (basin) and maximum (peak) energy stacking
     configurations. Returns a tuple of the form (basin, peak).
     """
+    
+    static_dirs = [
+        d for d in os.listdir(os.getcwd()) if 'x' in d and len(d) == 3
+    ]
 
-    lattice = Structure.from_file('CONTCAR').lattice
-
-    n_divs_x = int(math.ceil(lattice.a * 2.5))
-    n_divs_y = int(math.ceil(lattice.b * 2.5))
+    n_divs_x = max([int(d[0]) for d in static_dirs])
+    n_divs_y = max([int(d[1]) for d in static_dirs])
 
     X_VALUES = range(n_divs_x)
     Y_VALUES = range(n_divs_y)

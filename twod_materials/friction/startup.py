@@ -30,10 +30,12 @@ VASP = loadfn(os.path.join(os.path.expanduser('~'),
                            'config.yaml'))['normal_binary']
 
 
-def run_gamma_calculations(submit=True):
+def run_gamma_calculations(submit=True, step_size=0.5):
     """
     Setup a 2D grid of static energy calculations to plot the Gamma
     surface between two layers of the 2D material.
+
+    Step size is the distance between grid points in Angstroms.
     """
 
     if not os.path.isdir('friction'):
@@ -51,8 +53,8 @@ def run_gamma_calculations(submit=True):
     structure = Structure.from_file('POSCAR')
     n_sites_per_layer = structure.num_sites
 
-    n_divs_x = int(math.ceil(structure.lattice.a * 2.5))
-    n_divs_y = int(math.ceil(structure.lattice.b * 2.5))
+    n_divs_x = int(math.ceil(structure.lattice.a / step_size))
+    n_divs_y = int(math.ceil(structure.lattice.b / step_size))
 
     # Get the thickness of the material.
     max_height = max([site.coords[2] for site in structure.sites])
