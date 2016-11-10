@@ -71,10 +71,14 @@ def get_magmom_string():
     return ' '.join(magmoms)
 
 
-def relax(submit=True, force_overwrite=False):
+def relax(submit=True, force_overwrite=False, dim='2D'):
     """
-    Should be run before pretty much anything else, in order to get the
-    right energy of the 2D material.
+    Should be run before pretty much anything else, in order
+    to get the right energy of the 2D material.
+
+    `dim`: Set to "3D" if you want to include 3D k-points. The
+    default behavior is for 2D materials, and removes k-points with
+    z-components.
     """
 
     if force_overwrite or not utl.is_converged(os.getcwd()):
@@ -86,12 +90,13 @@ def relax(submit=True, force_overwrite=False):
         # KPOINTS
         Kpoints.automatic_density(Structure.from_file('POSCAR'),
                                   1000).write_file('KPOINTS')
-        kpts_lines = open('KPOINTS').readlines()
-        with open('KPOINTS', 'w') as kpts:
-            for line in kpts_lines[:3]:
-                kpts.write(line)
-            kpts.write(kpts_lines[3].split()[0] + ' '
-                       + kpts_lines[3].split()[1] + ' 1')
+        if dim == '2D':
+            kpts_lines = open('KPOINTS').readlines()
+            with open('KPOINTS', 'w') as kpts:
+                for line in kpts_lines[:3]:
+                    kpts.write(line)
+                kpts.write(kpts_lines[3].split()[0] + ' '
+                           + kpts_lines[3].split()[1] + ' 1')
         # INCAR
         INCAR_DICT.update({'MAGMOM': get_magmom_string()})
         Incar.from_dict(INCAR_DICT).write_file('INCAR')

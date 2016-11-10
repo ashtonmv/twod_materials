@@ -125,10 +125,13 @@ def remove_z_kpoints(output='KPOINTS'):
             kpts.write('\n\n')
 
 
-def run_linemode_calculation(submit=True, force_overwrite=False):
+def run_linemode_calculation(submit=True, force_overwrite=False, dim='2D'):
     """
     Setup and submit a normal PBE calculation for band structure along
     high symmetry k-paths.
+
+    `dim`: Set to "3D" if you want a 3D band structure. The default
+    behavior is to remove all k-points with a z-component.
     """
 
     PBE_INCAR_DICT = {'EDIFF': 1e-6, 'IBRION': 2, 'ISIF': 3,
@@ -150,7 +153,8 @@ def run_linemode_calculation(submit=True, force_overwrite=False):
         kpath = HighSymmKpath(structure)
         Kpoints.automatic_linemode(20, kpath).write_file('pbe_bands/KPOINTS')
         os.chdir('pbe_bands')
-        remove_z_kpoints()
+        if dim == '2D':
+            remove_z_kpoints()
         if HIPERGATOR == 1:
             write_pbs_runjob(directory, 1, 16, '800mb', '6:00:00', VASP)
             submission_command = 'qsub runjob'
@@ -165,12 +169,15 @@ def run_linemode_calculation(submit=True, force_overwrite=False):
         os.chdir('../')
 
 
-def run_hse_prep_calculation(submit=True):
+def run_hse_prep_calculation(submit=True, dim='2D'):
     """
     Submits a quick static calculation to calculate the IBZKPT
     file using a smaller number of k-points (200/atom instead of
     1000/atom). The other outputs from this calculation are
     essentially useless.
+
+    `dim`: Set to "3D" to include 3D k-points. The default behavior
+    is for 2D materials, and removes all k-points with z-components.
     """
 
     if not os.path.isdir('hse_prep'):
@@ -187,13 +194,14 @@ def run_hse_prep_calculation(submit=True):
         Structure.from_file('POSCAR'), 200
     ).write_file('KPOINTS')
 
-    kpts_lines = open('KPOINTS').readlines()
+    if dim == '2D':
+        kpts_lines = open('KPOINTS').readlines()
 
-    with open('KPOINTS', 'w') as kpts:
-        for line in kpts_lines[:3]:
-            kpts.write(line)
-        kpts.write(kpts_lines[3].split()[0] + ' '
-                   + kpts_lines[3].split()[1] + ' 1')
+        with open('KPOINTS', 'w') as kpts:
+            for line in kpts_lines[:3]:
+                kpts.write(line)
+            kpts.write(kpts_lines[3].split()[0] + ' '
+                       + kpts_lines[3].split()[1] + ' 1')
 
     if submit and HIPERGATOR == 1:
         os.system('qsub runjob')
@@ -203,7 +211,7 @@ def run_hse_prep_calculation(submit=True):
 
 
 def run_hse_calculation(submit=True, force_overwrite=False,
-                        destroy_prep_directory=False):
+                        destroy_prep_directory=False, dim='2D'):
     """
     Setup/submit an HSE06 calculation to get an accurate band structure.
     Requires a previous WAVECAR and IBZKPT from a standard DFT run. See
@@ -213,6 +221,9 @@ def run_hse_calculation(submit=True, force_overwrite=False,
     destroy_prep_directory=True will `rm -r` the hse_prep directory, if
     it exists. This can help you to automatically clean up and save
     space.
+
+    `dim`: set to "3D" for a 3D band structure. The default behavior,
+    "2D", is to remove all k-points with a z-component.
     """
 
     HSE_INCAR_DICT = {'LHFCALC': True, 'HFSCREEN': 0.2, 'AEXX': 0.25,
@@ -243,7 +254,8 @@ def run_hse_calculation(submit=True, force_overwrite=False,
         n_ibz_kpts = int(ibz_lines[1].split()[0])
         kpath = HighSymmKpath(Structure.from_file('POSCAR'))
         Kpoints.automatic_linemode(20, kpath).write_file('KPOINTS')
-        remove_z_kpoints(output='KPOINTS')
+        if dim == '2D':
+            remove_z_kpoints(output='KPOINTS')
         linemode_lines = open('KPOINTS').readlines()
 
         abs_path = []
