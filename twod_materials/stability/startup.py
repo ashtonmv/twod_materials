@@ -52,25 +52,6 @@ except IOError:
                          ' mp_api: your_api_key')
 
 
-def get_magmom_string():
-    """
-    Based on a POSCAR, returns the string required for the MAGMOM
-    setting in the INCAR. Initializes transition metals with 6.0
-    bohr magneton and all others with 0.5.
-    """
-
-    magmoms = []
-    poscar_lines = open('POSCAR').readlines()
-    elements = poscar_lines[5].split()
-    amounts = poscar_lines[6].split()
-    for i in range(len(elements)):
-        if Element(elements[i]).is_transition_metal:
-            magmoms.append('{}*6.0'.format(amounts[i]))
-        else:
-            magmoms.append('{}*0.5'.format(amounts[i]))
-    return ' '.join(magmoms)
-
-
 def relax(submit=True, force_overwrite=False, dim='2D'):
     """
     Should be run before pretty much anything else, in order
@@ -98,7 +79,7 @@ def relax(submit=True, force_overwrite=False, dim='2D'):
                 kpts.write(kpts_lines[3].split()[0] + ' '
                            + kpts_lines[3].split()[1] + ' 1')
         # INCAR
-        INCAR_DICT.update({'MAGMOM': get_magmom_string()})
+        INCAR_DICT.update({'MAGMOM': utl.get_magmom_string()})
         Incar.from_dict(INCAR_DICT).write_file('INCAR')
         # POTCAR
         utl.write_potcar()
@@ -139,7 +120,7 @@ def relax_competing_phases(competing_phases, submit=True,
             structure = MPR.get_structure_by_material_id(phase[1])
             structure.to('POSCAR', 'POSCAR')
             Kpoints.automatic_density(structure, 1000).write_file('KPOINTS')
-            INCAR_DICT.update({'MAGMOM': get_magmom_string()})
+            INCAR_DICT.update({'MAGMOM': utl.get_magmom_string()})
             Incar.from_dict(INCAR_DICT).write_file('INCAR')
             utl.write_potcar()
             if HIPERGATOR == 1:
@@ -173,7 +154,7 @@ def relax_3d(submit=True, force_overwrite=False):
         Kpoints.automatic_density(Structure.from_file('POSCAR'),
                                   1000).write_file('KPOINTS')
         # INCAR
-        INCAR_DICT.update({'MAGMOM': get_magmom_string()})
+        INCAR_DICT.update({'MAGMOM': utl.get_magmom_string()})
         Incar.from_dict(INCAR_DICT).write_file('INCAR')
         # POTCAR
         utl.write_potcar()
