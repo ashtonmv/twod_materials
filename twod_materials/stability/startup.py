@@ -57,6 +57,10 @@ def get_magmom_string():
     Based on a POSCAR, returns the string required for the MAGMOM
     setting in the INCAR. Initializes transition metals with 6.0
     bohr magneton and all others with 0.5.
+
+    Returns:
+        MAGMOM as a string. For example:
+        '1*6.0 2*0.5'
     """
 
     magmoms = []
@@ -73,8 +77,15 @@ def get_magmom_string():
 
 def relax(submit=True, force_overwrite=False):
     """
-    Should be run before pretty much anything else, in order to get the
-    right energy of the 2D material.
+    Writes input files and optionally submits a self-consistent
+    relaxation. Should be run before pretty much anything else, in
+    order to get the right energy and structure of the 2D material.
+
+    Kwargs:
+        submit (bool): Whether or not to submit the job.
+        force_overwrite (bool): Whether or not to overwrite files
+            if an already converged vasprun.xml exists in the
+            directory.
     """
 
     if force_overwrite or not utl.is_converged(os.getcwd()):
@@ -118,6 +129,17 @@ def relax_competing_phases(competing_phases, submit=True,
     After obtaining the competing phases, relax them with the same
     input parameters as the 2D materials in order to ensure
     compatibility.
+
+    Args:
+        competing_phases (list): List of competing phases (or
+            possible decomposition products; whatever floats
+            your boat). Typically obtained by
+            `get_competing_phases()`.
+    Kwargs:
+        submit (bool): Whether or not to submit the job.
+        force_overwrite (bool): Whether or not to overwrite files
+            if an already converged vasprun.xml exists in the
+            directory.
     """
 
     if not os.path.isdir('all_competitors'):
@@ -157,6 +179,12 @@ def relax_competing_phases(competing_phases, submit=True,
 def relax_3d(submit=True, force_overwrite=False):
     """
     Standard relaxation for a single directory of a bulk material.
+
+    Kwargs:
+        submit (bool): Whether or not to submit the job.
+        force_overwrite (bool): Whether or not to overwrite files
+            if an already converged vasprun.xml exists in the
+            directory.
     """
 
     if force_overwrite or not utl.is_converged(os.getcwd()):

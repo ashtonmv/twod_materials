@@ -110,7 +110,7 @@ def get_basin_and_peak_locations():
     the minimum (basin) and maximum (peak) energy stacking
     configurations. Returns a tuple of the form (basin, peak).
     """
-    
+
     static_dirs = [
         d for d in os.listdir(os.getcwd()) if 'x' in d and len(d) == 3
     ]
@@ -357,6 +357,7 @@ def get_mu_vs_F_N(basin_dir):
     xnew = np.arange(spacings[0], spacings[-1], 0.001)
     ynew = interpolate.splev(xnew, spline, der=0)
     ynew_slope = interpolate.splev(spacings, spline, der=1)
+    # Convert eV.A to nN
     F_N = [-y * 1.602 for y in ynew_slope]
 
     os.chdir('../../friction/normal')
