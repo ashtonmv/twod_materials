@@ -285,8 +285,11 @@ def plot_color_projected_bands(fmt='pdf', ylim=(-5, 5)):
     vasprun = Vasprun('vasprun.xml', parse_projected_eigen=True)
     bs = vasprun.get_band_structure('KPOINTS', line_mode=True)
     bspp = BSPlotterProjected(bs)
-    bspp.get_elt_projected_plots_color(ylim=ylim).savefig(
-        'color_projected_bands.{}'.format(fmt))
+    plot = bspp.get_elt_projected_plots_color()
+    fig = plot.gcf()
+    ax = fig.gca()
+    ax.set_ylim(ylim)
+    fig.savefig('color_projected_bands.{}'.format(fmt))
     plt.close()
 
 

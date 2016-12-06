@@ -52,29 +52,6 @@ except IOError:
                          ' mp_api: your_api_key')
 
 
-def get_magmom_string():
-    """
-    Based on a POSCAR, returns the string required for the MAGMOM
-    setting in the INCAR. Initializes transition metals with 6.0
-    bohr magneton and all others with 0.5.
-
-    Returns:
-        MAGMOM as a string. For example:
-        '1*6.0 2*0.5'
-    """
-
-    magmoms = []
-    poscar_lines = open('POSCAR').readlines()
-    elements = poscar_lines[5].split()
-    amounts = poscar_lines[6].split()
-    for i in range(len(elements)):
-        if Element(elements[i]).is_transition_metal:
-            magmoms.append('{}*6.0'.format(amounts[i]))
-        else:
-            magmoms.append('{}*0.5'.format(amounts[i]))
-    return ' '.join(magmoms)
-
-
 def relax(submit=True, force_overwrite=False):
     """
     Writes input files and optionally submits a self-consistent
@@ -121,59 +98,6 @@ def relax(submit=True, force_overwrite=False):
 
         if submit:
             os.system(submission_command)
-
-
-def relax_competing_phases(competing_phases, submit=True,
-                            force_overwrite=False):
-    """
-    After obtaining the competing phases, relax them with the same
-    input parameters as the 2D materials in order to ensure
-    compatibility.
-
-    Args:
-        competing_phases (list): List of competing phases (or
-            possible decomposition products; whatever floats
-            your boat). Typically obtained by
-            `get_competing_phases()`.
-    Kwargs:
-        submit (bool): Whether or not to submit the job.
-        force_overwrite (bool): Whether or not to overwrite files
-            if an already converged vasprun.xml exists in the
-            directory.
-    """
-
-    if not os.path.isdir('all_competitors'):
-        os.mkdir('all_competitors')
-    os.chdir('all_competitors')
-
-    for phase in competing_phases:
-        if not os.path.isdir(phase[0]):
-            os.mkdir(phase[0])
-        directory = os.path.join(os.getcwd(), phase[0])
-        if force_overwrite or not utl.is_converged(directory):
-            os.chdir(phase[0])
-            os.system('cp {} .'.format(KERNEL_PATH))
-            structure = MPR.get_structure_by_material_id(phase[1])
-            structure.to('POSCAR', 'POSCAR')
-            Kpoints.automatic_density(structure, 1000).write_file('KPOINTS')
-            INCAR_DICT.update({'MAGMOM': get_magmom_string()})
-            Incar.from_dict(INCAR_DICT).write_file('INCAR')
-            utl.write_potcar()
-            if HIPERGATOR == 1:
-                utl.write_pbs_runjob('{}_3d'.format(phase[0]), 1, 8, '600mb',
-                                     '6:00:00', VASP)
-                submission_command = 'qsub runjob'
-
-            elif HIPERGATOR == 2:
-                utl.write_slurm_runjob('{}_3d'.format(phase[0]), 8, '600mb',
-                                       '6:00:00', VASP)
-                submission_command = 'sbatch runjob'
-
-            if submit:
-                os.system(submission_command)
-
-            os.chdir('../')
-    os.chdir('../')
 
 
 def relax_3d(submit=True, force_overwrite=False):

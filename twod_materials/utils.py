@@ -82,6 +82,25 @@ def get_status(directory):
     return job_state
 
 
+def get_magmom_string():
+    """
+    Based on a POSCAR, returns the string required for the MAGMOM
+    setting in the INCAR. Initializes transition metals with 6.0
+    bohr magneton and all others with 0.5.
+    """
+
+    magmoms = []
+    poscar_lines = open('POSCAR').readlines()
+    elements = poscar_lines[5].split()
+    amounts = poscar_lines[6].split()
+    for i in range(len(elements)):
+        if Element(elements[i]).is_transition_metal:
+            magmoms.append('{}*6.0'.format(amounts[i]))
+        else:
+            magmoms.append('{}*0.5'.format(amounts[i]))
+    return ' '.join(magmoms)
+
+
 def get_spacing(filename='POSCAR', cut=0.9):
     """
     Returns the interlayer spacing for a 2D material.
