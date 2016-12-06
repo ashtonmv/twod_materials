@@ -41,6 +41,12 @@ except IOError:
 def is_converged(directory):
     """
     Check if a relaxation has converged.
+
+    Args:
+        directory (str): path to directory to check.
+
+    Returns:
+        boolean. Whether or not the job is converged.
     """
 
     try:
@@ -56,28 +62,26 @@ def is_converged(directory):
 def get_status(directory):
     """
     Return the state of job in a directory. Designed for use on
-    HiperGator.
+    Slurm systems.
 
-    'C': complete
-    'R': running
-    'Q': queued
-    'E': error
-    'H': hold
-    'None': No job in this directory
+    Args:
+        directory (str): *absolute* path to the directory to check.
+
+    Returns:
+        string version of SLURM job status.
+            'None' = No running job in this directory
     """
 
-    os.system("qstat -f| grep -A 30 '{}' >> my_jobs.txt".format(USR))
-    lines = open('my_jobs.txt').readlines()
+    os.system("squeue -o '%.18i %.9P %.16j %.8u %.8T %.10M %.9l %.6D %R %Z'"
+              ">> all_jobs.txt")
+    lines = open('all_jobs.txt').readlines()
     job_state = None
     for i in range(len(lines)):
-        if 'Output_Path' in lines[i]:
-            joined_line = ''.join([lines[i].strip(), lines[i+1].strip()])
-            if directory in joined_line:
-                for j in range(i, 0, -1):
-                    if 'job_state' in lines[j]:
-                        job_state = lines[j].split('=')[1].strip()
-                        break
-    os.system('rm my_jobs.txt')
+        if directory in lines[i]:
+            job_state = lines[i][4]
+            break
+
+    os.system('rm all_jobs.txt')
 
     return job_state
 
@@ -87,6 +91,9 @@ def get_magmom_string():
     Based on a POSCAR, returns the string required for the MAGMOM
     setting in the INCAR. Initializes transition metals with 6.0
     bohr magneton and all others with 0.5.
+
+    Returns:
+        string. e.g. '1*6.0 3*0.5'
     """
 
     magmoms = []
@@ -104,6 +111,15 @@ def get_magmom_string():
 def get_spacing(filename='POSCAR', cut=0.9):
     """
     Returns the interlayer spacing for a 2D material.
+
+    Kwargs:
+        filename (str): 'CONTCAR' or 'POSCAR', whichever file to
+            check.
+        cut (float): a fractional z-coordinate that must be within
+            the vacuum region.
+
+    Returns:
+        float. Spacing in Angstroms.
     """
 
     structure = Structure.from_file('POSCAR')
@@ -128,9 +144,16 @@ def get_spacing(filename='POSCAR', cut=0.9):
 
 def get_rotation_matrix(axis, theta):
     """
-    Return the rotation matrix associated with counterclockwise rotation
+    Find the rotation matrix associated with counterclockwise rotation
     about the given axis by theta radians.
     Credit: http://stackoverflow.com/users/190597/unutbu
+
+    Args:
+        axis (list): rotation axis of the form [x, y, z]
+        theta (float): rotational angle in radians
+
+    Returns:
+        array. Rotation matrix.
     """
 
     axis = np.asarray(axis)
@@ -151,6 +174,12 @@ def align_c_axis_along_001(structure):
     returns the same structure rotated so that the c-axis is along
     the [001] direction. This is useful for vasp compiled with no
     z-axis relaxation.
+
+    Args:
+        structure (structure): Pymatgen Structure object to rotate.
+
+    Returns:
+        structure. Rotated to align c-axis along [001].
     """
 
     c = structure.lattice._matrix[2]
@@ -167,13 +196,19 @@ def align_c_axis_along_001(structure):
 
 def get_structure_type(structure, write_poscar_from_cluster=False):
     """
-    Returns 'molecular', 'chain', 'layered', 'heterogeneous', or
-    'conventional' to describe the periodicity of bonded clusters
-    in a bulk structure.
+    This is a topology-scaling algorithm used to describe the
+    periodicity of bonded clusters in a bulk structure.
 
     Args:
+        structure (structure): Pymatgen structure object to classify.
+
+    Kwargs:
         write_poscar_from_cluster (bool): Set to True to write a
             POSCAR from the sites in the cluster.
+
+    Returns:
+        string. 'molecular' (0D), 'chain', 'layered', 'heterogeneous'
+            (intercalated 3D), or 'conventional' (3D)
     """
 
     # The conventional standard structure is much easier to work
@@ -286,9 +321,12 @@ def add_vacuum(delta, cut=0.9):
     """
     Adds vacuum to a POSCAR.
 
-    delta = vacuum thickness in Angstroms
-    cut = height above which atoms will need to be fixed. Defaults to
-    0.9.
+    Args:
+        delta (float): vacuum thickness in Angstroms
+
+    Kwargs:
+        cut (delta): fractional height above which atoms will
+            need to be fixed. Defaults to 0.9.
     """
 
     # Fix the POSCAR to put bottom atoms (even if they are above the
@@ -425,10 +463,14 @@ def write_potcar(pot_path=POTENTIAL_PATH, types='None'):
     """
     Writes a POTCAR file based on a list of types.
 
-    types = list of same length as number of elements containing specifications
-    for the kind of potential desired for each element. If no special potential
-    is desired, just enter '', or leave types = 'None'.
-    (['pv', '', '3'])
+    Kwargs:
+        pot_path (str): can be changed to override default location
+            of POTCAR files.
+        types (list): list of same length as number of elements
+            containing specifications for the kind of potential
+            desired for each element. If left as 'None', uses the
+            defaults in the 'potcar_symbols.yaml' file in the package
+            root.
     """
 
     poscar = open('POSCAR', 'r')
@@ -609,9 +651,17 @@ def remove_z_kpoints():
 
 def write_pbs_runjob(name, nnodes, nprocessors, pmem, walltime, binary):
     """
-    writes a runjob based on a name, nnodes, nprocessors, walltime, and
-    binary. Designed for runjobs on the Hennig group_list on HiperGator
-    1 (PBS).
+    writes a runjob based on a name, nnodes, nprocessors, walltime,
+    and binary. Designed for runjobs on the Hennig group_list on
+    HiperGator 1 (PBS).
+
+    Args:
+        name (str): job name.
+        nnodes (int): number of requested nodes.
+        nprocessors (int): number of requested processors.
+        pmem (str): requested memory including units, e.g. '1600mb'.
+        walltime (str): requested wall time, hh:mm:ss e.g. '2:00:00'.
+        binary (str): absolute path to binary to run.
     """
     runjob = open('runjob', 'w')
     runjob.write('#!/bin/sh\n')
@@ -634,6 +684,13 @@ def write_slurm_runjob(name, ntasks, pmem, walltime, binary):
     writes a runjob based on a name, nnodes, nprocessors, walltime, and
     binary. Designed for runjobs on the Hennig group_list on HiperGator
     2 (SLURM).
+
+    Args:
+        name (str): job name.
+        ntasks (int): total number of requested processors.
+        pmem (str): requested memory including units, e.g. '1600mb'.
+        walltime (str): requested wall time, hh:mm:ss e.g. '2:00:00'.
+        binary (str): absolute path to binary to run.
     """
 
     nnodes = int(np.ceil(float(ntasks) / 32.0))

@@ -21,21 +21,33 @@ PACKAGE_PATH = twod_materials.__file__.replace('__init__.pyc', '')
 PACKAGE_PATH = PACKAGE_PATH.replace('__init__.py', '')
 KERNEL_PATH = os.path.join(PACKAGE_PATH, 'vdw_kernel.bindat')
 
-if '/ufrc/' in os.getcwd():
-    HIPERGATOR = 2
-elif '/scratch/' in os.getcwd():
-    HIPERGATOR = 1
+try:
+    config_vars = loadfn(os.path.join(PACKAGE_PATH, 'config.yaml'))
+    MPR = MPRester(config_vars['mp_api'])
+    VASP = config_vars['normal_binary']
+    VASP_2D = config_vars['twod_binary']
+    if 'queue_system' in config_vars:
+        QUEUE = config_vars['queue_system'].lower()
+    elif '/ufrc/' in os.getcwd():
+        QUEUE = 'slurm'
+    elif '/scratch/' in os.getcwd():
+        QUEUE = 'pbs'
+except Exception as e:
+    raise e
 
-VASP = loadfn(os.path.join(os.path.expanduser('~'),
-                           'config.yaml'))['normal_binary']
+
 
 
 def run_gamma_calculations(submit=True, step_size=0.5):
     """
     Setup a 2D grid of static energy calculations to plot the Gamma
-    surface between two layers of the 2D material.
+    surface between two layers of the 2D material. These calculations
+    are run and stored in subdirectories under 'friction/lateral'.
 
-    Step size is the distance between grid points in Angstroms.
+    Kwargs:
+        submit (bool): Whether or not to submit the jobs.
+        step_size (float): the distance between grid points in
+            Angstroms.
     """
 
     if not os.path.isdir('friction'):
@@ -109,11 +121,11 @@ def run_gamma_calculations(submit=True, step_size=0.5):
                     poscar.write(' '.join([str(i) for i in new_coords])
                                  + '\n')
 
-            if HIPERGATOR == 1:
+            if QUEUE == 'pbs':
                 utl.write_pbs_runjob(dir, 1, 4, '400mb', '1:00:00', VASP)
                 submission_command = 'qsub runjob'
 
-            elif HIPERGATOR == 2:
+            elif QUEUE == 'slurm':
                 utl.write_slurm_runjob(dir, 4, '400mb', '1:00:00', VASP)
                 submission_command = 'sbatch runjob'
 
@@ -129,14 +141,27 @@ def run_normal_force_calculations(basin_and_saddle_dirs,
                                   spacings=np.arange(1.5, 4.25, 0.25),
                                   submit=True):
     """
-    Set up and run static calculations of the basin directory
-    and saddle directory (specified as a tuple) at specified
-    interlayer spacings (by default, between 1.5 and 4 Angstroms)
-    to get f_N and f_F.
-    ex.
-        run_normal_force_calculations(('0x0', '3x6'))
-    or
-        run_normal_force_calculations(get_basin_and_peak_locations())
+    Set up and run static calculations of the basin directory and
+    saddle directory at specified interlayer spacings to get f_N and
+    f_F.
+
+    Args:
+        basin_and_saddle_dirs (tuple): Can be obtained by the
+            get_basin_and_peak_locations() function under
+            friction.analysis. For example,
+
+            run_normal_force_calculations(('0x0', '3x6'))
+
+            or
+
+            run_normal_force_calculations(get_basin_and_peak_locations())
+
+            will both work.
+
+    Kwargs:
+        spacings (list): list of interlayer spacings (in Angstroms,
+            as floats) at which to run the calculations.
+        submit (bool): Whether or not to submit the jobs.
     """
 
     spacings = [str(spc) for spc in spacings]

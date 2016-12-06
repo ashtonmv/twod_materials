@@ -23,6 +23,10 @@ def plot_gamma_surface(fmt='pdf'):
     Collect the energies from a grid of static energy
     calculations to plot the Gamma surface between two layers of the 2D
     material.
+
+    Kwargs:
+        fmt (str): matplotlib format style. Check the matplotlib
+            docs for options.
     """
 
     static_dirs = [
@@ -106,9 +110,12 @@ def plot_gamma_surface(fmt='pdf'):
 
 def get_basin_and_peak_locations():
     """
-    Find which directories inside `friction/lateral` represent
+    Find which directories inside 'friction/lateral' represent
     the minimum (basin) and maximum (peak) energy stacking
-    configurations. Returns a tuple of the form (basin, peak).
+    configurations.
+
+    Returns:
+        tuple. Of the form (basin, peak).
     """
 
     static_dirs = [
@@ -149,6 +156,10 @@ def plot_friction_force(fmt='pdf'):
     """
     Plot the sinusoidal curve of delta E between basin and saddle
     points for each normal spacing dz.
+
+    Kwargs:
+        fmt (str): matplotlib format style. Check the matplotlib
+            docs for options.
     """
 
     os.chdir('friction/normal')
@@ -212,6 +223,15 @@ def plot_normal_force(basin_dir, fmt='pdf'):
     """
     Plot the LJ-like curve of the energy at the basin point
     as a function of normal spacing dz.
+
+    Args:
+        basin_dir (str): directory corresponding to the minimum
+            energy on the gamma surface. Generally obtained by the
+            get_basin_and_peak_locations() function.
+
+    Kwargs:
+        fmt (str): matplotlib format style. Check the matplotlib
+            docs for options.
     """
 
     os.chdir('friction/normal')
@@ -269,7 +289,16 @@ def plot_normal_force(basin_dir, fmt='pdf'):
 def plot_mu_vs_F_N(basin_dir, fmt='pdf'):
     """
     Plot friction coefficient 'mu' vs. F_Normal.
-    mu = F_friction / F_Normal
+    mu = F_friction / F_Normal.
+
+    Args:
+        basin_dir (str): directory corresponding to the minimum
+            energy on the gamma surface. Generally obtained by the
+            get_basin_and_peak_locations() function.
+
+    Kwargs:
+        fmt (str): matplotlib format style. Check the matplotlib
+            docs for options.
     """
 
     fig = plt.figure(figsize=(16, 10))
@@ -340,6 +369,14 @@ def get_mu_vs_F_N(basin_dir):
     """
     Essentially the same function as plotting, but without the plot.
     Returns {'F_N': F_N, 'mu': mu}. F_N is in units of nN.
+
+    Args:
+        basin_dir (str): directory corresponding to the minimum
+            energy on the gamma surface. Generally obtained by the
+            get_basin_and_peak_locations() function.
+
+    Returns:
+        dict. Of the form {'F_N': F_N, 'mu': mu, 'F_f': F_f}.
     """
 
     os.chdir('friction/normal')

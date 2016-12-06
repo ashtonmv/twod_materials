@@ -58,9 +58,13 @@ def plot_band_alignments(directories, run_type='PBE', fmt='pdf'):
     Plot CBM's and VBM's of all compounds together, relative to the band
     edges of H2O.
 
-    args:
-        run_type: 'PBE' or 'HSE', so that the function knows which
-            subdirectory to go into.
+    Args:
+        directories (list): list of the directory paths for materials
+            to include in the plot.
+
+    Kwargs:
+        run_type (str): 'PBE' or 'HSE', so that the function knows which
+            subdirectory to go into (pbe_bands or hse_bands).
     """
 
     if run_type == 'HSE':
@@ -214,6 +218,13 @@ def plot_local_potential(axis=2, ylim=(-20, 0), fmt='pdf'):
     Plot data from the LOCPOT file along any of the 3 primary axes.
     Useful for determining surface dipole moments and electric
     potentials on the interior of the material.
+
+    Kwargs:
+        axis (int): 0 = x, 1 = y, 2 = z
+        ylim (tuple): minimum and maximum potentials for the plot's
+            y-axis.
+        fmt (str): matplotlib format style. Check the matplotlib
+            docs for options.
     """
 
     ax = plt.figure(figsize=(16, 10)).gca()
@@ -258,9 +269,17 @@ def plot_local_potential(axis=2, ylim=(-20, 0), fmt='pdf'):
     plt.close()
 
 
-def plot_band_structure(fmt='pdf', ylim=(-5, 5), draw_fermi=False):
+def plot_band_structure(ylim=(-5, 5), draw_fermi=False, fmt='pdf'):
     """
     Plot a standard band structure with no projections.
+
+    Kwargs:
+        ylim (tuple): minimum and maximum potentials for the plot's
+            y-axis.
+        draw_fermi (bool): whether or not to draw a dashed line at
+            E_F.
+        fmt (str): matplotlib format style. Check the matplotlib
+            docs for options.
     """
 
     vasprun = Vasprun('vasprun.xml')
@@ -276,10 +295,16 @@ def plot_band_structure(fmt='pdf', ylim=(-5, 5), draw_fermi=False):
     plt.close()
 
 
-def plot_color_projected_bands(fmt='pdf', ylim=(-5, 5)):
+def plot_color_projected_bands(ylim=(-5, 5), fmt='pdf'):
     """
     Plot a single band structure where the color of the band indicates
     the elemental character of the eigenvalue.
+
+    Kwargs:
+        ylim (tuple): minimum and maximum energies for the plot's
+            y-axis.
+        fmt (str): matplotlib format style. Check the matplotlib
+            docs for options.
     """
 
     vasprun = Vasprun('vasprun.xml', parse_projected_eigen=True)
@@ -293,10 +318,16 @@ def plot_color_projected_bands(fmt='pdf', ylim=(-5, 5)):
     plt.close()
 
 
-def plot_elt_projected_bands(fmt='pdf', ylim=(-5, 5)):
+def plot_elt_projected_bands(ylim=(-5, 5), fmt='pdf'):
     """
     Plot separate band structures for each element where the size of the
     markers indicates the elemental character of the eigenvalue.
+
+    Kwargs:
+        ylim (tuple): minimum and maximum energies for the plot's
+            y-axis.
+        fmt (str): matplotlib format style. Check the matplotlib
+            docs for options.
     """
 
     vasprun = Vasprun('vasprun.xml', parse_projected_eigen=True)
@@ -312,8 +343,16 @@ def plot_orb_projected_bands(orbitals, fmt='pdf', ylim=(-5, 5)):
     Plot a separate band structure for each orbital of each element in
     orbitals.
 
-    orbitals (dict): {element: [orbitals]}
-        e.g. {'Mo': ['s', 'p', 'd'], 'S': ['p']}
+    Args:
+        orbitals (dict): dictionary of the form
+            {element: [orbitals]},
+            e.g. {'Mo': ['s', 'p', 'd'], 'S': ['p']}
+
+    Kwargs:
+        ylim (tuple): minimum and maximum energies for the plot's
+            y-axis.
+        fmt (str): matplotlib format style. Check the matplotlib
+            docs for options.
     """
 
     vasprun = Vasprun('vasprun.xml', parse_projected_eigen=True)
@@ -326,6 +365,9 @@ def plot_orb_projected_bands(orbitals, fmt='pdf', ylim=(-5, 5)):
 
 def get_effective_mass():
     """
+    This function is in a beta stage, and its results are not
+    guaranteed to be useful.
+
     Returns effective masses from a band structure, using parabolic
     fitting to determine the band curvature at the CBM
     for electrons and at the VBM for holes. This curvature enters
@@ -347,6 +389,14 @@ def get_effective_mass():
           direction (either left or right) was not actually fit to.
           Until fixed, this (most likely) explains any negative masses
           returned.
+
+    Returns:
+        Dictionary of the form:
+            {'electron': {'left': e_m_eff_l, 'right': e_m_eff_r},
+             'hole': {'left': h_m_eff_l, 'right': h_m_eff_r}}
+            where 'left' and 'right' indicate the reciprocal
+            directions to the left and right of the extremum in the
+            band structure.
     """
 
     H_BAR = 6.582119514e-16  # eV*s
@@ -448,7 +498,10 @@ def plot_density_of_states(fmt='pdf'):
     """
     Plots the density of states from the DOSCAR in the cwd. Plots
     spin up in red, down in green, and the sum in black. Efermi = 0.
-    Written by Cheitanya Kolluru.
+
+    Kwargs:
+        fmt (str): matplotlib format style. Check the matplotlib
+            docs for options.
     """
 
     efermi = Vasprun('vasprun.xml').efermi
@@ -483,6 +536,10 @@ def plot_density_of_states(fmt='pdf'):
 def find_dirac_nodes():
     """
     Look for band crossings near (within `tol` eV) the Fermi level.
+
+    Returns:
+        boolean. Whether or not a band crossing occurs at or near
+            the fermi level.
     """
 
     vasprun = Vasprun('vasprun.xml')
@@ -515,12 +572,22 @@ def find_dirac_nodes():
 def plot_spin_texture(inner_index, outer_index, center=(0, 0), fmt='pdf'):
     """
     Create six plots- one for the spin texture in x, y, and z in
-    each of two bands: an `inner` band and an `outer` band. For
+    each of two bands: an inner band and an outer band. For
     Rashba spin-splitting, these two bands should be the two that
     have split.
+
+    Args:
+        inner_index, outer_index (int): indices of the two spin-split
+            bands.
+
+    Kwargs:
+        center (tuple): coordinates of the center of the splitting
+            (where the bands cross). Defaults to Gamma.
+        fmt: matplotlib format style. Check the matplotlib
+            docs for options.
     """
 
-    procar_lines = open("SrSbSe2F_PROCAR").readlines()
+    procar_lines = open("PROCAR").readlines()
 
     data = procar_lines[1].split()
     n_kpts = int(data[3])
@@ -528,7 +595,7 @@ def plot_spin_texture(inner_index, outer_index, center=(0, 0), fmt='pdf'):
     n_ions = int(data[11])
 
     # These numbers, along with almost everything else in this
-    # function, are magical; don't touch them.
+    # function, are magical. Don't touch them.
     band_step = (n_ions + 1) * 4 + 4
     k_step = n_bands * band_step + 3
 
