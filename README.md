@@ -1,5 +1,3 @@
-![alt tag](./twod_materials_logo.png)
-
 [![Build Status](https://travis-ci.org/ashtonmv/twod_materials.svg?branch=master)](https://travis-ci.org/ashtonmv/twod_materials)
 
 # twod_materials
