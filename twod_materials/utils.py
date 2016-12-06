@@ -498,6 +498,115 @@ def write_potcar(pot_path=POTENTIAL_PATH, types='None'):
     outfile.close()
 
 
+def write_circle_mesh_kpoints(center=[0, 0, 0], radius=0.1,
+                              resolution=20):
+    """
+    Create a circular mesh of k-points centered around a specific
+    k-point and write it to the KPOINTS file. Non-circular meshes
+    are not supported, but shouldn't be too hard to code. All
+    k-point weights are 1.
+
+    Kwargs:
+        center (list): x, y, and z coordinates of mesh center.
+            Defaults to Gamma.
+        radius (float): Size of the mesh in inverse Angstroms.
+        resolution (int): Number of mesh divisions along the
+            radius in the 3 primary directions.
+    """
+
+    kpoints = []
+    step = radius / resolution
+
+    for i in range(-resolution, resolution):
+        for j in range(-resolution, resolution):
+            if i**2 + j**2 <= resolution**2:
+                kpoints.append([str(center[0]+step*i), str(center[1]+step*j),
+                '0', '1'])
+    with open('KPOINTS', 'w') as kpts:
+        kpts.write('KPOINTS\n{}\ndirect\n'.format(len(kpoints)))
+        for kpt in kpoints:
+            kpts.write(' '.join(kpt))
+            kpts.write('\n')
+
+
+def get_markovian_path(points):
+    """
+    Calculates the shortest path connecting an array of 2D
+    points.
+
+    Args:
+        points (list): list/array of points of the format
+            [[x_1, y_1, z_1], [x_2, y_2, z_2], ...]
+
+    Returns:
+        A sorted list of the points in order on the markovian path.
+    """
+
+    def dist(x,y):
+        return math.hypot(y[0] - x[0], y[1] - x[1])
+
+    paths = [p for p in it.permutations(points)]
+    path_distances = [
+        sum(map(lambda x: dist(x[0], x[1]), zip(p[:-1], p[1:]))) for p in paths
+    ]
+    min_index = np.argmin(path_distances)
+
+    return paths[min_index]
+
+
+def remove_z_kpoints():
+    """
+    Strips all linemode k-points from the KPOINTS file that include a
+    z-component, since these are not relevant for 2D materials.
+    """
+
+    kpoint_lines = open('KPOINTS').readlines()
+
+    twod_kpoints = []
+    labels = {}
+    i = 4
+
+    while i < len(kpoint_lines):
+        kpt_1 = kpoint_lines[i].split()
+        kpt_2 = kpoint_lines[i+1].split()
+        if float(kpt_1[2]) == 0.0 and [float(kpt_1[0]),
+                                       float(kpt_1[1])] not in twod_kpoints:
+            twod_kpoints.append(
+                [float(kpt_1[0]), float(kpt_1[1])]
+            )
+            labels[kpt_1[4]] = [float(kpt_1[0]), float(kpt_1[1])]
+
+        if float(kpt_2[2]) == 0.0 and [float(kpt_2[0]),
+                                       float(kpt_2[1])] not in twod_kpoints:
+            twod_kpoints.append(
+                [float(kpt_2[0]), float(kpt_2[1])]
+            )
+            labels[kpt_2[4]] = [float(kpt_2[0]), float(kpt_2[1])]
+        i += 3
+
+    kpath = get_markovian_path(twod_kpoints)
+
+    with open('KPOINTS', 'w') as kpts:
+        for line in kpoint_lines[:4]:
+            kpts.write(line)
+
+        for i in range(len(kpath)):
+            label_1 = [l for l in labels if labels[l] == kpath[i]][0]
+            if i == len(kpath) - 1:
+                kpt_2 = kpath[0]
+                label_2 = [l for l in labels if labels[l] == kpath[0]][0]
+            else:
+                kpt_2 = kpath[i+1]
+                label_2 = [l for l in labels if labels[l] == kpath[i+1]][0]
+
+            kpts.write(' '.join([str(kpath[i][0]), str(kpath[i][1]), '0.0 !',
+                                label_1]))
+            kpts.write('\n')
+            kpts.write(' '.join([str(kpt_2[0]), str(kpt_2[1]), '0.0 !',
+                                label_2]))
+            kpts.write('\n\n')
+
+
 def write_pbs_runjob(name, nnodes, nprocessors, pmem, walltime, binary):
     """
     writes a runjob based on a name, nnodes, nprocessors, walltime, and
@@ -524,7 +633,7 @@ def write_slurm_runjob(name, ntasks, pmem, walltime, binary):
     """
     writes a runjob based on a name, nnodes, nprocessors, walltime, and
     binary. Designed for runjobs on the Hennig group_list on HiperGator
-    1 (PBS).
+    2 (SLURM).
     """
 
     nnodes = int(np.ceil(float(ntasks) / 32.0))

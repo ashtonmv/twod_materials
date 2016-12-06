@@ -16,6 +16,12 @@ try:
     MPR = MPRester(
         loadfn(os.path.join(os.path.expanduser('~'), 'config.yaml'))['mp_api']
         )
+    if 'queue_system' in config_vars:
+        QUEUE = config_vars['queue_system'].lower()
+    elif '/ufrc/' in os.getcwd():
+        QUEUE = 'slurm'
+    elif '/scratch/' in os.getcwd():
+        QUEUE = 'pbs'
 except IOError:
     try:
         MPR = MPRester(
@@ -25,11 +31,6 @@ except IOError:
         raise ValueError('No Materials Project API key found. Please check'
                          ' that your ~/config.yaml contains the field'
                          ' mp_api: your_api_key')
-
-if '/ufrc/' in os.getcwd():
-    HIPERGATOR = 2
-elif '/scratch/' in os.getcwd():
-    HIPERGATOR = 1
 
 
 class Calibrator():
@@ -104,13 +105,13 @@ class Calibrator():
 
             # Runjob
 
-            if HIPERGATOR == 1:
+            if QUEUE == 'pbs':
                 utl.write_pbs_runjob('{}_cal'.format(elt), self._ncores,
                                      self._nprocs, self._pmem, self._walltime,
                                      self._binary)
                 submission_command = 'qsub runjob'
 
-            elif HIPERGATOR == 2:
+            elif QUEUE == 'slurm':
                 utl.write_slurm_runjob('{}_cal'.format(elt), self._nprocs,
                                        self._pmem, self._walltime,
                                        self._binary)
@@ -145,13 +146,13 @@ class Calibrator():
                 utl.write_potcar(types=[self._potcar_dict[el] for el in elements])
 
                 # Runjob
-                if HIPERGATOR == 1:
+                if QUEUE == 'slurm':
                     utl.write_pbs_runjob('{}_cal'.format(elt), self._ncores,
                                          self._nprocs, self._pmem,
                                          self._walltime, self._binary)
                     submission_command = 'qsub runjob'
 
-                elif HIPERGATOR == 2:
+                elif QUEUE == 'pbs':
                     utl.write_slurm_runjob('{}_cal'.format(elt), self._nprocs,
                                            self._pmem, self._walltime,
                                            self._binary)

@@ -1,7 +1,7 @@
 # Configure these settings and then move this
 # file to your home directory ('~/config.yaml').
-username: your_uf_hpc_username
 mp_api: your_materials_project_api_key
 normal_binary: /path/to/vasp/executable
 twod_binary: /path/to/2D/vasp/executable
 potentials: /path/to/POTCAR/files
+queue_system: slurm  # Change to pbs if working on a pbs queue.
