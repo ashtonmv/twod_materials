@@ -175,7 +175,7 @@ def run_hse_calculation(dim=2, submit=True, force_overwrite=False,
         n_ibz_kpts = int(ibz_lines[1].split()[0])
         kpath = HighSymmKpath(Structure.from_file('POSCAR'))
         Kpoints.automatic_linemode(20, kpath).write_file('KPOINTS')
-        if dim == '2D':
+        if dim == 2:
             remove_z_kpoints(output='KPOINTS')
         linemode_lines = open('KPOINTS').readlines()
 
