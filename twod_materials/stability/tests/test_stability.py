@@ -23,16 +23,5 @@ class AnalysisTest(unittest.TestCase):
         self.assertEqual(competing_phases, [(u'BiTeCl', u'mp-28944')])
 
 
-class StabilityTest(unittest.TestCase):
-
-    def test_relax_sets_up_directory_properly(self):
-        os.chdir(ROOT)
-        os.chdir('BiTeCl')
-        relax(submit=False)
-        for file in [f for f in os.listdir(os.getcwd()) if f != 'vasprun.xml']:
-            test_lines = open(f).readlines()
-            control_lines = open('../BiTeCl_control/{}'.format(f)).readlines()
-            self.assertEqual(test_lines, control_lines)
-
 if __name__ == '__main__':
     unittest.main()
