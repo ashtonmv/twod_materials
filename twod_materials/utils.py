@@ -8,6 +8,7 @@ from pymatgen.core.composition import Composition
 from pymatgen.core.periodic_table import Element
 from pymatgen.symmetry.analyzer import SpacegroupAnalyzer
 from pymatgen.io.vasp.outputs import Vasprun
+from pymatgen.matproj.rest import MPRester
 
 from monty.serialization import loadfn
 
@@ -22,20 +23,19 @@ PACKAGE_PATH = twod_materials.__file__.replace('__init__.pyc', '')
 PACKAGE_PATH = PACKAGE_PATH.replace('__init__.py', '')
 
 try:
-    POTENTIAL_PATH = loadfn(
-        os.path.join(os.path.expanduser('~'), 'config.yaml'))['potentials']
-    USR = loadfn(os.path.join(os.path.expanduser('~'),
-                 'config.yaml'))['username']
-
-except IOError:
-    try:
-        POTENTIAL_PATH = os.environ['VASP_PSP_DIR']
-        USR = os.environ['USERNAME']
-    except KeyError:
-        raise ValueError('No config.yaml file found. Please check'
-                         ' that your config.yaml is located in ~/ and'
-                         ' contains the field'
-                         ' potentials: /path/to/your/POTCAR/files/')
+    config_vars = loadfn(os.path.join(PACKAGE_PATH, '../config.yaml'))
+    MPR = MPRester(config_vars['mp_api'])
+    VASP = config_vars['normal_binary']
+    VASP_2D = config_vars['twod_binary']
+    POTENTIAL_PATH = config_vars['potentials']
+    if 'queue_system' in config_vars:
+        QUEUE = config_vars['queue_system'].lower()
+    elif '/ufrc/' in os.getcwd():
+        QUEUE = 'slurm'
+    elif '/scratch/' in os.getcwd():
+        QUEUE = 'pbs'
+except Exception as e:
+    print(e)
 
 
 def is_converged(directory):
@@ -112,7 +112,7 @@ def get_spacing(filename='POSCAR', cut=0.9):
     """
     Returns the interlayer spacing for a 2D material.
 
-    Kwargs:
+    Args:
         filename (str): 'CONTCAR' or 'POSCAR', whichever file to
             check.
         cut (float): a fractional z-coordinate that must be within
@@ -201,8 +201,6 @@ def get_structure_type(structure, write_poscar_from_cluster=False):
 
     Args:
         structure (structure): Pymatgen structure object to classify.
-
-    Kwargs:
         write_poscar_from_cluster (bool): Set to True to write a
             POSCAR from the sites in the cluster.
 
@@ -323,8 +321,6 @@ def add_vacuum(delta, cut=0.9):
 
     Args:
         delta (float): vacuum thickness in Angstroms
-
-    Kwargs:
         cut (delta): fractional height above which atoms will
             need to be fixed. Defaults to 0.9.
     """
@@ -463,7 +459,7 @@ def write_potcar(pot_path=POTENTIAL_PATH, types='None'):
     """
     Writes a POTCAR file based on a list of types.
 
-    Kwargs:
+    Args:
         pot_path (str): can be changed to override default location
             of POTCAR files.
         types (list): list of same length as number of elements
@@ -548,7 +544,7 @@ def write_circle_mesh_kpoints(center=[0, 0, 0], radius=0.1,
     are not supported, but shouldn't be too hard to code. All
     k-point weights are 1.
 
-    Kwargs:
+    Args:
         center (list): x, y, and z coordinates of mesh center.
             Defaults to Gamma.
         radius (float): Size of the mesh in inverse Angstroms.

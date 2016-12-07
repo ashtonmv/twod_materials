@@ -14,7 +14,6 @@ from pymatgen.core.structure import Structure
 from pymatgen.io.vasp.inputs import Incar
 
 import twod_materials
-from twod_materials.stability.startup import get_magmom_string
 
 
 PACKAGE_PATH = twod_materials.__file__.replace('__init__.pyc', '')
@@ -22,8 +21,7 @@ PACKAGE_PATH = PACKAGE_PATH.replace('__init__.py', '')
 KERNEL_PATH = os.path.join(PACKAGE_PATH, 'vdw_kernel.bindat')
 
 try:
-    config_vars = loadfn(os.path.join(PACKAGE_PATH, 'config.yaml'))
-    MPR = MPRester(config_vars['mp_api'])
+    config_vars = loadfn(os.path.join(PACKAGE_PATH, '../config.yaml'))
     VASP = config_vars['normal_binary']
     VASP_2D = config_vars['twod_binary']
     if 'queue_system' in config_vars:
@@ -33,7 +31,7 @@ try:
     elif '/scratch/' in os.getcwd():
         QUEUE = 'pbs'
 except Exception as e:
-    raise e
+    print(e)
 
 
 
@@ -44,7 +42,7 @@ def run_gamma_calculations(submit=True, step_size=0.5):
     surface between two layers of the 2D material. These calculations
     are run and stored in subdirectories under 'friction/lateral'.
 
-    Kwargs:
+    Args:
         submit (bool): Whether or not to submit the jobs.
         step_size (float): the distance between grid points in
             Angstroms.
@@ -103,7 +101,8 @@ def run_gamma_calculations(submit=True, step_size=0.5):
             utl.write_potcar()
             incar_dict = Incar.from_file('INCAR').as_dict()
             incar_dict.update({'NSW': 0, 'LAECHG': False, 'LCHARG': False,
-                               'LWAVE': False, 'MAGMOM': get_magmom_string()})
+                               'LWAVE': False,
+                               'MAGMOM': utl.get_magmom_string()})
             incar_dict.pop('NPAR', None)
             Incar.from_dict(incar_dict).write_file('INCAR')
 
@@ -157,8 +156,6 @@ def run_normal_force_calculations(basin_and_saddle_dirs,
             run_normal_force_calculations(get_basin_and_peak_locations())
 
             will both work.
-
-    Kwargs:
         spacings (list): list of interlayer spacings (in Angstroms,
             as floats) at which to run the calculations.
         submit (bool): Whether or not to submit the jobs.

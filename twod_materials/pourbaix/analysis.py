@@ -29,7 +29,6 @@ import twod_materials
 PACKAGE_PATH = twod_materials.__file__.replace('__init__.pyc', '')
 PACKAGE_PATH = PACKAGE_PATH.replace('__init__.py', '')
 
-
 ION_DATA = loadfn(os.path.join(PACKAGE_PATH, 'pourbaix/ions.yaml'))
 END_MEMBERS = loadfn(os.path.join(PACKAGE_PATH, 'pourbaix/end_members.yaml'))
 ION_COLORS = loadfn(os.path.join(PACKAGE_PATH, 'pourbaix/ion_colors.yaml'))
@@ -57,7 +56,7 @@ def plot_pourbaix_diagram(metastability=0.0, ion_concentration=1e-6, fmt='pdf'):
     """
     Creates a Pourbaix diagram for the material in the cwd.
 
-    Kwargs:
+    Args:
         metastability (float): desired metastable tolerance energy
             (meV/atom). <~50 is generally a sensible range to use.
         ion_concentration (float): in mol/kg. Sensible values are

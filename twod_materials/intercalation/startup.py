@@ -1,5 +1,7 @@
 from __future__ import print_function, division, unicode_literals
 
+import os
+
 from pymatgen.core.structure import Structure
 from pymatgen.core.periodic_table import Element
 from pymatgen.analysis.defects.point_defects import (
@@ -10,6 +12,14 @@ import operator
 
 from monty.dev import requires
 
+import twod_materials
+
+from monty.serialization import loadfn
+
+
+PACKAGE_PATH = twod_materials.__file__.replace('__init__.pyc', '')
+PACKAGE_PATH = PACKAGE_PATH.replace('__init__.py', '')
+
 try:
     import zeo
     zeo_found = True
@@ -17,7 +27,7 @@ except ImportError:
     zeo_found = False
 
 try:
-    config_vars = loadfn(os.path.join(PACKAGE_PATH, 'config.yaml'))
+    config_vars = loadfn(os.path.join(PACKAGE_PATH, '../config.yaml'))
     if 'queue_system' in config_vars:
         QUEUE = config_vars['queue_system'].lower()
     elif '/ufrc/' in os.getcwd():
@@ -25,7 +35,7 @@ try:
     elif '/scratch/' in os.getcwd():
         QUEUE = 'pbs'
 except Exception as e:
-    raise e
+    print(e)
 
 
 @requires(zeo_found, 'get_voronoi_nodes requires Zeo++ cython extension to be '

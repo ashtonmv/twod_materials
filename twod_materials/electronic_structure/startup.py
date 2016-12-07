@@ -3,7 +3,7 @@ from __future__ import print_function, division, unicode_literals
 import os
 
 from twod_materials.utils import *
-from twod_materials.stability.startup import get_magmom_string, relax
+from twod_materials.stability.startup import relax
 
 from pymatgen.io.vasp.inputs import Kpoints, Incar
 from pymatgen.symmetry.bandstructure import HighSymmKpath
@@ -22,7 +22,7 @@ PACKAGE_PATH = twod_materials.__file__.replace('__init__.pyc', '')
 PACKAGE_PATH = PACKAGE_PATH.replace('__init__.py', '')
 
 try:
-    config_vars = loadfn(os.path.join(PACKAGE_PATH, 'config.yaml'))
+    config_vars = loadfn(os.path.join(PACKAGE_PATH, '../config.yaml'))
     VASP = config_vars['normal_binary']
     if 'queue_system' in config_vars:
         QUEUE = config_vars['queue_system'].lower()
@@ -31,7 +31,7 @@ try:
     elif '/scratch/' in os.getcwd():
         QUEUE = 'pbs'
 except Exception as e:
-    raise e
+    print(e)
 
 
 def run_pbe_calculation(dim=2, submit=True, force_overwrite=False):
@@ -39,7 +39,7 @@ def run_pbe_calculation(dim=2, submit=True, force_overwrite=False):
     Setup and submit a normal PBE calculation for band structure along
     high symmetry k-paths.
 
-    Kwargs:
+    Args:
         dim (int): 2 for relaxing a 2D material, 3 for a 3D material.
         submit (bool): Whether or not to submit the job.
         force_overwrite (bool): Whether or not to overwrite files
@@ -89,7 +89,7 @@ def run_hse_prep_calculation(dim=2, submit=True):
     1000/atom). The other outputs from this calculation are
     essentially useless.
 
-    Kwargs:
+    Args:
         dim (int): 2 for relaxing a 2D material, 3 for a 3D material.
         submit (bool): Whether or not to submit the job.
     """
@@ -98,7 +98,7 @@ def run_hse_prep_calculation(dim=2, submit=True):
         os.mkdir('hse_prep')
     os.chdir('hse_prep')
     os.system('cp ../CONTCAR ./POSCAR')
-    relax(submit=False)
+    relax(dim=2, submit=False)
     incar_dict = Incar.from_file('INCAR').as_dict()
     incar_dict.update({'NSW': 0, 'NELM': 1, 'LWAVE': False, 'LCHARG': False,
                        'LAECHG': False})
@@ -136,7 +136,7 @@ def run_hse_calculation(dim=2, submit=True, force_overwrite=False,
     http://cms.mpi.univie.ac.at/wiki/index.php/Si_bandstructure for more
     details.
 
-    Kwargs:
+    Args:
         dim (int): 2 for relaxing a 2D material, 3 for a 3D material.
         submit (bool): Whether or not to submit the job.
         force_overwrite (bool): Whether or not to overwrite files

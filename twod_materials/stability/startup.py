@@ -28,7 +28,7 @@ INCAR_DICT = {
 KERNEL_PATH = os.path.join(PACKAGE_PATH, 'vdw_kernel.bindat')
 
 try:
-    config_vars = loadfn(os.path.join(PACKAGE_PATH, 'config.yaml'))
+    config_vars = loadfn(os.path.join(PACKAGE_PATH, '../config.yaml'))
     MPR = MPRester(config_vars['mp_api'])
     VASP = config_vars['normal_binary']
     VASP_2D = config_vars['twod_binary']
@@ -39,7 +39,7 @@ try:
     elif '/scratch/' in os.getcwd():
         QUEUE = 'pbs'
 except Exception as e:
-    raise e
+    print(e)
 
 
 def relax(dim=2, submit=True, force_overwrite=False):
@@ -48,7 +48,7 @@ def relax(dim=2, submit=True, force_overwrite=False):
     relaxation. Should be run before pretty much anything else, in
     order to get the right energy and structure of the material.
 
-    Kwargs:
+    Args:
         dim (int): 2 for relaxing a 2D material, 3 for a 3D material.
         submit (bool): Whether or not to submit the job.
         force_overwrite (bool): Whether or not to overwrite files

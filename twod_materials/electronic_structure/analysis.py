@@ -61,10 +61,10 @@ def plot_band_alignments(directories, run_type='PBE', fmt='pdf'):
     Args:
         directories (list): list of the directory paths for materials
             to include in the plot.
-
-    Kwargs:
         run_type (str): 'PBE' or 'HSE', so that the function knows which
             subdirectory to go into (pbe_bands or hse_bands).
+        fmt (str): matplotlib format style. Check the matplotlib
+            docs for options.
     """
 
     if run_type == 'HSE':
@@ -219,7 +219,7 @@ def plot_local_potential(axis=2, ylim=(-20, 0), fmt='pdf'):
     Useful for determining surface dipole moments and electric
     potentials on the interior of the material.
 
-    Kwargs:
+    Args:
         axis (int): 0 = x, 1 = y, 2 = z
         ylim (tuple): minimum and maximum potentials for the plot's
             y-axis.
@@ -273,7 +273,7 @@ def plot_band_structure(ylim=(-5, 5), draw_fermi=False, fmt='pdf'):
     """
     Plot a standard band structure with no projections.
 
-    Kwargs:
+    Args:
         ylim (tuple): minimum and maximum potentials for the plot's
             y-axis.
         draw_fermi (bool): whether or not to draw a dashed line at
@@ -300,7 +300,7 @@ def plot_color_projected_bands(ylim=(-5, 5), fmt='pdf'):
     Plot a single band structure where the color of the band indicates
     the elemental character of the eigenvalue.
 
-    Kwargs:
+    Args:
         ylim (tuple): minimum and maximum energies for the plot's
             y-axis.
         fmt (str): matplotlib format style. Check the matplotlib
@@ -323,7 +323,7 @@ def plot_elt_projected_bands(ylim=(-5, 5), fmt='pdf'):
     Plot separate band structures for each element where the size of the
     markers indicates the elemental character of the eigenvalue.
 
-    Kwargs:
+    Args:
         ylim (tuple): minimum and maximum energies for the plot's
             y-axis.
         fmt (str): matplotlib format style. Check the matplotlib
@@ -347,8 +347,6 @@ def plot_orb_projected_bands(orbitals, fmt='pdf', ylim=(-5, 5)):
         orbitals (dict): dictionary of the form
             {element: [orbitals]},
             e.g. {'Mo': ['s', 'p', 'd'], 'S': ['p']}
-
-    Kwargs:
         ylim (tuple): minimum and maximum energies for the plot's
             y-axis.
         fmt (str): matplotlib format style. Check the matplotlib
@@ -368,7 +366,7 @@ def get_effective_mass():
     This function is in a beta stage, and its results are not
     guaranteed to be useful.
 
-    Returns effective masses from a band structure, using parabolic
+    Finds effective masses from a band structure, using parabolic
     fitting to determine the band curvature at the CBM
     for electrons and at the VBM for holes. This curvature enters
     the equation m* = (hbar)**2 / (d^2E/dk^2).
@@ -391,7 +389,7 @@ def get_effective_mass():
           returned.
 
     Returns:
-        Dictionary of the form:
+        Dictionary of the form
             {'electron': {'left': e_m_eff_l, 'right': e_m_eff_r},
              'hole': {'left': h_m_eff_l, 'right': h_m_eff_r}}
             where 'left' and 'right' indicate the reciprocal
@@ -499,7 +497,7 @@ def plot_density_of_states(fmt='pdf'):
     Plots the density of states from the DOSCAR in the cwd. Plots
     spin up in red, down in green, and the sum in black. Efermi = 0.
 
-    Kwargs:
+    Args:
         fmt (str): matplotlib format style. Check the matplotlib
             docs for options.
     """
@@ -579,8 +577,6 @@ def plot_spin_texture(inner_index, outer_index, center=(0, 0), fmt='pdf'):
     Args:
         inner_index, outer_index (int): indices of the two spin-split
             bands.
-
-    Kwargs:
         center (tuple): coordinates of the center of the splitting
             (where the bands cross). Defaults to Gamma.
         fmt: matplotlib format style. Check the matplotlib

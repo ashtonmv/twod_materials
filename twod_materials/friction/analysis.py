@@ -24,7 +24,7 @@ def plot_gamma_surface(fmt='pdf'):
     calculations to plot the Gamma surface between two layers of the 2D
     material.
 
-    Kwargs:
+    Args:
         fmt (str): matplotlib format style. Check the matplotlib
             docs for options.
     """
@@ -128,7 +128,7 @@ def get_basin_and_peak_locations():
     X_VALUES = range(n_divs_x)
     Y_VALUES = range(n_divs_y)
 
-    os.chdir('friction/lateral')
+    os.chdir('lateral')
 
     abs_maximum = -10000
     abs_minimum = 0
@@ -147,7 +147,7 @@ def get_basin_and_peak_locations():
             except:
                 pass
             os.chdir('../')
-    os.chdir('../../')
+    os.chdir('../')
 
     return(basin, peak)
 
@@ -157,12 +157,12 @@ def plot_friction_force(fmt='pdf'):
     Plot the sinusoidal curve of delta E between basin and saddle
     points for each normal spacing dz.
 
-    Kwargs:
+    Args:
         fmt (str): matplotlib format style. Check the matplotlib
             docs for options.
     """
 
-    os.chdir('friction/normal')
+    os.chdir('normal')
 
     f, (ax1, ax2) = plt.subplots(2, figsize=(16, 16))
 
@@ -216,7 +216,7 @@ def plot_friction_force(fmt='pdf'):
     ax1.legend(loc='upper right')
     ax2.legend(loc='upper right')
     plt.savefig('F_f.{}'.format(fmt))
-    os.chdir('../../')
+    os.chdir('../')
 
 
 def plot_normal_force(basin_dir, fmt='pdf'):
@@ -228,13 +228,11 @@ def plot_normal_force(basin_dir, fmt='pdf'):
         basin_dir (str): directory corresponding to the minimum
             energy on the gamma surface. Generally obtained by the
             get_basin_and_peak_locations() function.
-
-    Kwargs:
         fmt (str): matplotlib format style. Check the matplotlib
             docs for options.
     """
 
-    os.chdir('friction/normal')
+    os.chdir('normal')
     spacings = [float(dir) for dir in os.listdir(os.getcwd()) if
                 os.path.isdir(dir)]
     spacings.sort()
@@ -283,7 +281,7 @@ def plot_normal_force(basin_dir, fmt='pdf'):
 
     plt.savefig('F_N.{}'.format(fmt))
 
-    os.chdir('../../')
+    os.chdir('../')
 
 
 def plot_mu_vs_F_N(basin_dir, fmt='pdf'):
@@ -295,8 +293,6 @@ def plot_mu_vs_F_N(basin_dir, fmt='pdf'):
         basin_dir (str): directory corresponding to the minimum
             energy on the gamma surface. Generally obtained by the
             get_basin_and_peak_locations() function.
-
-    Kwargs:
         fmt (str): matplotlib format style. Check the matplotlib
             docs for options.
     """
@@ -305,7 +301,7 @@ def plot_mu_vs_F_N(basin_dir, fmt='pdf'):
     ax = fig.gca()
     ax2 = ax.twinx()
 
-    os.chdir('friction/normal')
+    os.chdir('normal')
     spacings = [float(dir) for dir in os.listdir(os.getcwd()) if
                 os.path.isdir(dir)]
     spacings.sort()
@@ -355,7 +351,7 @@ def plot_mu_vs_F_N(basin_dir, fmt='pdf'):
         F_f.append(max(cosx) * 1.602)
         os.chdir('../')
 
-    os.chdir('../../')
+    os.chdir('../')
 
     mu = [f / N for f, N in zip(F_f, F_N)]
 
@@ -368,7 +364,6 @@ def plot_mu_vs_F_N(basin_dir, fmt='pdf'):
 def get_mu_vs_F_N(basin_dir):
     """
     Essentially the same function as plotting, but without the plot.
-    Returns {'F_N': F_N, 'mu': mu}. F_N is in units of nN.
 
     Args:
         basin_dir (str): directory corresponding to the minimum
@@ -376,10 +371,11 @@ def get_mu_vs_F_N(basin_dir):
             get_basin_and_peak_locations() function.
 
     Returns:
-        dict. Of the form {'F_N': F_N, 'mu': mu, 'F_f': F_f}.
+        dict. Of the form {'F_N': F_N, 'mu': mu, 'F_f': F_f}, where
+            forces are in nN.
     """
 
-    os.chdir('friction/normal')
+    os.chdir('normal')
     spacings = [float(dir) for dir in os.listdir(os.getcwd()) if
                 os.path.isdir(dir)]
     spacings.sort()
@@ -397,8 +393,6 @@ def get_mu_vs_F_N(basin_dir):
     # Convert eV.A to nN
     F_N = [-y * 1.602 for y in ynew_slope]
 
-    os.chdir('../../friction/normal')
-
     F_f = []
 
     for spacing in sorted([float(spc) for spc in os.listdir(os.getcwd()) if
@@ -430,7 +424,7 @@ def get_mu_vs_F_N(basin_dir):
         F_f.append(max(cosx) * 1.602)
         os.chdir('../')
 
-    os.chdir('../../')
+    os.chdir('../')
 
     mu = [f / N for f, N in zip(F_f, F_N)]
 

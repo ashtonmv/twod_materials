@@ -11,9 +11,14 @@ from pymatgen.matproj.rest import MPRester
 
 from monty.serialization import loadfn
 
+import twod_materials
+
+
+PACKAGE_PATH = twod_materials.__file__.replace('__init__.pyc', '')
+PACKAGE_PATH = PACKAGE_PATH.replace('__init__.py', '')
 
 try:
-    config_vars = loadfn(os.path.join(PACKAGE_PATH, 'config.yaml'))
+    config_vars = loadfn(os.path.join(PACKAGE_PATH, '../config.yaml'))
     MPR = MPRester(config_vars['mp_api'])
     VASP = config_vars['normal_binary']
     VASP_2D = config_vars['twod_binary']
@@ -24,7 +29,7 @@ try:
     elif '/scratch/' in os.getcwd():
         QUEUE = 'pbs'
 except Exception as e:
-    raise e
+    print(e)
 
 
 class Calibrator():
@@ -39,8 +44,6 @@ class Calibrator():
             potcar_dict (dict): dictionary of all species to be
                 calibrated and the potcar hashes used in the
                 given framework, e.g. {'Mo': 'pv', 'S': ''}.
-
-        Kwargs:
             n_kpts_per_atom (int): Create kpoints at specified
                 density per atom. Defaults to 500.
             n_cores, n_procs, pmem, walltime, binary: runjob
@@ -64,7 +67,7 @@ class Calibrator():
         the ion corrections to match a specified framework of INCAR
         parameters, k-points, and potcar hashes.
 
-        Kwargs:
+        Args:
             submit (bool): whether or not to submit each job
                 after preparing it.
         """
@@ -161,7 +164,7 @@ class Calibrator():
         """
         Pulls the corrections to be added for each element.
 
-        Kwargs:
+        Args:
             parent_dir (str): path to parent directory containing
                 subdirectories created by prepare(). Defaults to cwd.
             write_yaml (bool): whether or not to write the

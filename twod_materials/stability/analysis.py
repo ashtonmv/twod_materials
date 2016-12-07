@@ -19,20 +19,17 @@ import matplotlib as mpl
 mpl.use('Agg')
 import matplotlib.pyplot as plt
 
+import twod_materials
+
+
+PACKAGE_PATH = twod_materials.__file__.replace('__init__.pyc', '')
+PACKAGE_PATH = PACKAGE_PATH.replace('__init__.py', '')
 
 try:
-    MPR = MPRester(
-        loadfn(os.path.join(os.path.expanduser('~'), 'config.yaml'))['mp_api']
-        )
-except IOError:
-    try:
-        MPR = MPRester(
-            os.environ['MP_API']
-            )
-    except KeyError:
-        raise ValueError('No Materials Project API key found. Please check'
-                         ' that your ~/config.yaml contains the field'
-                         ' mp_api: your_api_key')
+    config_vars = loadfn(os.path.join(PACKAGE_PATH, '../config.yaml'))
+    MPR = MPRester(config_vars['mp_api'])
+except Exception as e:
+    print(e)
 
 
 def get_competing_phases():
@@ -42,8 +39,7 @@ def get_competing_phases():
     Returns:
         A list of phases as tuples formatted as
         [(formula_1, Materials_Project_ID_1),
-         (formula_2, Materials_Project_ID_2),
-         ...]
+        (formula_2, Materials_Project_ID_2), ...]
     """
 
     total_competing_phases = []
@@ -74,12 +70,12 @@ def get_hull_distance(competing_phase_directory='../competing_phases'):
     Calculate the material's distance to the thermodynamic hull,
     based on species in the Materials Project database.
 
-    Kwargs:
+    Args:
         competing_phase_directory (str): absolute or relative path
             to the location where your competing phases have been
             relaxed. The default expectation is that they are stored
             in a directory named 'competing_phases' at the same level
-            as your material's relaxation directory.            
+            as your material's relaxation directory.
     Returns:
         float. distance (eV/atom) between the material and the
             hull.
@@ -138,7 +134,6 @@ def plot_hull_distances(hull_distances, fmt='pdf'):
     Args:
         hull_distances (dict): follow the format:
             {reduced_formula: hull_distance (in eV/atom)}
-    Kwargs:
         fmt (str): matplotlib format style. Check the matplotlib
             docs for options.
     """
