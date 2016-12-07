@@ -27,7 +27,10 @@ PACKAGE_PATH = PACKAGE_PATH.replace('__init__.py', '')
 
 try:
     config_vars = loadfn(os.path.join(PACKAGE_PATH, '../config.yaml'))
-    MPR = MPRester(config_vars['mp_api'])
+    if 'MP_API' in os.environ:
+        MPR = MPRester(os.environ['MP_API'])
+    else:
+        MPR = MPRester(config_vars['mp_api'])
 except Exception as e:
     print(e)
 

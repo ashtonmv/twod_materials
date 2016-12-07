@@ -29,7 +29,10 @@ KERNEL_PATH = os.path.join(PACKAGE_PATH, 'vdw_kernel.bindat')
 
 try:
     config_vars = loadfn(os.path.join(PACKAGE_PATH, '../config.yaml'))
-    MPR = MPRester(config_vars['mp_api'])
+    if 'MP_API' in os.environ:
+        MPR = MPRester(os.environ['MP_API'])
+    else:
+        MPR = MPRester(config_vars['mp_api'])
     VASP = config_vars['normal_binary']
     VASP_2D = config_vars['twod_binary']
     if 'queue_system' in config_vars:
@@ -66,7 +69,7 @@ def relax(dim=2, submit=True, force_overwrite=False):
                                   1000).write_file('KPOINTS')
 
         # INCAR
-        INCAR_DICT.update({'MAGMOM': get_magmom_string()})
+        INCAR_DICT.update({'MAGMOM': utl.get_magmom_string()})
         Incar.from_dict(INCAR_DICT).write_file('INCAR')
         # POTCAR
         utl.write_potcar()

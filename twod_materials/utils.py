@@ -24,7 +24,10 @@ PACKAGE_PATH = PACKAGE_PATH.replace('__init__.py', '')
 
 try:
     config_vars = loadfn(os.path.join(PACKAGE_PATH, '../config.yaml'))
-    MPR = MPRester(config_vars['mp_api'])
+    if 'MP_API' in os.environ:
+        MPR = MPRester(os.environ['MP_API'])
+    else:
+        MPR = MPRester(config_vars['mp_api'])
     VASP = config_vars['normal_binary']
     VASP_2D = config_vars['twod_binary']
     POTENTIAL_PATH = config_vars['potentials']

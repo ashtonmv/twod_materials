@@ -21,31 +21,26 @@ KERNEL_PATH = os.path.join(PACKAGE_PATH, 'vdw_kernel.bindat')
 ION_DATA = loadfn(os.path.join(PACKAGE_PATH, 'pourbaix/ions.yaml'))
 END_MEMBERS = loadfn(os.path.join(PACKAGE_PATH, 'pourbaix/end_members.yaml'))
 ION_COLORS = loadfn(os.path.join(PACKAGE_PATH, 'pourbaix/ion_colors.yaml'))
-try:
+
+if 'MP_API' in os.environ:
+    MPR = MPRester(os.environ['MP_API'])
+else:
     MPR = MPRester(
-        loadfn(os.path.join(os.path.expanduser('~'), 'config.yaml'))['mp_api']
+        loadfn(os.path.join(PACKAGE_PATH, 'config.yaml'))['mp_api']
         )
-except IOError:
-    try:
-        MPR = MPRester(
-            os.environ['MP_API']
-            )
-    except KeyError:
-        raise ValueError('No Materials Project API key found. Please check'
-                         ' that your ~/config.yaml contains the field'
-                         ' mp_api: your_api_key')
 
 
 class UtilsTest(unittest.TestCase):
 
     def test_is_converged_with_controls(self):
-        false_control = is_converged('./')
+        false_control = is_converged(PACKAGE_PATH)
         true_control = is_converged(os.path.join(PACKAGE_PATH,
                                                  'stability/tests/BiTeCl'))
         self.assertTrue(true_control)
         self.assertFalse(false_control)
 
     def test_add_vacuum_with_odd_structures(self):
+        os.chdir(PACKAGE_PATH)
         structure = MPR.get_structure_by_material_id('mp-2798')  # SiP
         top_layer = []
         for i in range(len(structure.sites)):
@@ -57,7 +52,6 @@ class UtilsTest(unittest.TestCase):
         add_vacuum(15 - get_spacing(), 0.5)
         self.assertTrue(14.9 < get_spacing() < 15.1)
         os.system('rm POSCAR')
-
 
 if __name__ == '__main__':
     unittest.main()
