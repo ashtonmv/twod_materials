@@ -18,6 +18,8 @@ import math
 
 import twod_materials
 
+import itertools as it
+
 
 PACKAGE_PATH = twod_materials.__file__.replace('__init__.pyc', '')
 PACKAGE_PATH = PACKAGE_PATH.replace('__init__.py', '')

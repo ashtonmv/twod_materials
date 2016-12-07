@@ -13,8 +13,6 @@ from monty.serialization import loadfn
 
 import numpy as np
 
-import itertools as it
-
 import math
 
 
