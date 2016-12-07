@@ -151,7 +151,7 @@ def run_hse_calculation(dim=2, submit=True, force_overwrite=False,
                       'ALGO': 'D', 'TIME': 0.4, 'NSW': 0,
                       'LVTOT': True, 'LVHAR': True, 'LORBIT': 11,
                       'LWAVE': True, 'NPAR': 8, 'PREC': 'Accurate',
-                      'EDIFF': 1e-6, 'ENCUT': 500, 'ICHARG': 2, 'ISMEAR': 1,
+                      'EDIFF': 1e-4, 'ENCUT': 450, 'ICHARG': 2, 'ISMEAR': 1,
                       'SIGMA': 0.1, 'IBRION': 2, 'ISIF': 3, 'ISPIN': 2}
 
     if not os.path.isdir('hse_bands'):
@@ -176,7 +176,7 @@ def run_hse_calculation(dim=2, submit=True, force_overwrite=False,
         kpath = HighSymmKpath(Structure.from_file('POSCAR'))
         Kpoints.automatic_linemode(20, kpath).write_file('KPOINTS')
         if dim == 2:
-            remove_z_kpoints(output='KPOINTS')
+            remove_z_kpoints()
         linemode_lines = open('KPOINTS').readlines()
 
         abs_path = []
