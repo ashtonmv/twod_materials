@@ -58,4 +58,4 @@ Throughout the package, there are a few configuration files that for the most
 part don't need to be changed (as opposed to config.yaml, which does):
 potcar_symbols.yaml and the yaml files under the `pourbaix` module.
 
-See the [tutorials](https://github.com/ashtonmv/twod_materials/wiki/stability-tutorial) for sample usage of every function in `twod_materials`.
+See the [tutorials](https://github.com/ashtonmv/twod_materials/wiki/Tutorial-1:-stability) for sample usage of every function in `twod_materials`.
