@@ -1,42 +1,61 @@
 [![Build Status](https://travis-ci.org/ashtonmv/twod_materials.svg?branch=master)](https://travis-ci.org/ashtonmv/twod_materials)
 [![Coverage](https://codecov.io/gh/ashtonmv/twod_materials/coverage.svg?branch=master)](https://codecov.io/gh/ashtonmv/twod_materials)
 
-# twod_materials
-Python modules for high-throughput 2D Materials Characterization
+About twod_materials
+====================
 
-# Setup
+The wiki pages contain the official maintained documentation for `twod_materials`, including a pretty comprehensive set of tutorials on how to use each of its modules. [Check it out!](https://github.com/ashtonmv/twod_materials/wiki)
+
+# Overview #
+
+`twod_materials` is a library of functions that I've used in my research on
+discovering and characterizing 2D materials. Some of them I have used thousands
+of times, and others I have used less than five times. The functions in
+`twod_materials` have been designed with user-friendliness as a priority,
+which occasionally comes at the expense of flexibility. For example, some of the
+post-processing functions will assume you have used a certain directory
+structure when organizing your calculations. The goal here was not to be
+restrictive, but to be streamlined.
+
+# Installation and setup #
+
+`twod_materials` must be installed through Github_. Once you've cloned its
+repository, run `pip install numpy` and then
+`pip install -r requirements.txt` to install its dependencies. You should then
+add its location to your system's `$PYTHONPATH` so you can import its
+functions from anywhere. There are a few ways to do this, including adding the
+following line to your `~/.bashrc` file:
+```
+  export PYTHONPATH=$PYTHONPATH:/path/to/twod_materials  # obviously change this
+```
 Edit config.yaml with your system's settings, following the template:
-
 ```
-mp_api: your_materials_project_api_key
-normal_binary: path_to_normal_vasp_executable
-twod_binary: path_to_twod_vasp_executable
-potentials: path_to_your_vasp_potentials
-queue_system: slurm_or_pbs
+  mp_api: your_materials_project_api_key
+  normal_binary: path_to_normal_vasp_executable
+  twod_binary: path_to_twod_vasp_executable
+  potentials: path_to_your_vasp_potentials
+  queue_system: slurm_or_pbs
 ```
 
-# Usage
+# How the package is structured #
 
-This package is designed to characterize 2D materials with as little
-*a priori* knowledge as possible. The only input required are the
-structures of the materials, which should be stored as POSCAR files in
-uniquely named directories, e.g.:
+There are five mature modules in `twod_materials`: `stability`,
+`electronic_structure`, `pourbaix`, `friction`, and `intercalation`.
+The `magnetism` module is, for now, still in its infancy. The `utils` module
+is basically just a library of helper functions used throughout the other
+packages.
 
-+ My_2D_Search
-    + WSe2
-        + POSCAR
-    + MoS2
-        + POSCAR
-    + Ti2CO2
-        + POSCAR
+Each of these modules has two submodules: `startup` and `analysis`. For
+most modules, `startup` contains functions that set up and submit VASP
+calculations by interacting with your machine's queue system (PBS or SLURM). It
+might be helpful to think of the `startup` submodules as pre-processing tools.
+The `analysis` submodules, then, contain post-processing functions. These
+post-processing functions can be grouped into two main categories: functions for
+analyzing data and functions for plotting it. All plotting functions use
+`matplotlib`.
 
-In almost all cases, before doing anything else, the user should use the
-relax() function to optimize the structures of the 2D materials using
-the framework of input parameters included here.
+Throughout the package, there are a few configuration files that for the most
+part don't need to be changed (as opposed to config.yaml, which does):
+potcar_symbols.yaml and the yaml files under the `pourbaix` module.
 
-Certain modules in the `analysis.py` files have been designed to be
-sensitive to the directory structure, and will work best if you've
-used the corresponding modules in the `startup.py` files to run the
-calculations. Please take this into consideration.)
-
-See the examples folder for some sample usage and workflows.
+See the [tutorials](https://github.com/ashtonmv/twod_materials/wiki/stability-tutorial) for sample usage of every function in `twod_materials`.
