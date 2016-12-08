@@ -4,7 +4,7 @@
 About twod_materials
 ====================
 
-The wiki pages contain the official maintained documentation for `twod_materials`, including a pretty comprehensive set of tutorials on how to use each of its modules. [Check it out!](https://github.com/ashtonmv/twod_materials/wiki)
+The [wiki pages](https://github.com/ashtonmv/twod_materials/wiki) contain the official maintained documentation for `twod_materials`, including a pretty comprehensive set of tutorials on how to use each of its modules.
 
 # Overview #
 
