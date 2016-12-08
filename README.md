@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.org/ashtonmv/twod_materials.svg?branch=master)](https://travis-ci.org/ashtonmv/twod_materials)
+[![Coverage](https://codecov.io/gh/ashtonmv/twod_materials/coverage.svg?branch=master)](https://travis-ci.org/ashtonmv/twod_materials)
 
 # twod_materials
 Python modules for high-throughput 2D Materials Characterization

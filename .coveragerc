@@ -1,6 +1,6 @@
 [run]
 branch = True
-source = __twod_materials__
+source = twod_materials
 
 [report]
 exclude_lines =
