@@ -2,8 +2,8 @@ import unittest
 
 import os
 
-from twod_materials.stability.analysis import (get_competing_phases,
-                                               get_hull_distance)
+from twod_materials.stability.startup import *
+from twod_materials.stability.analysis import *
 
 import twod_materials
 
@@ -11,6 +11,17 @@ import twod_materials
 PACKAGE_PATH = twod_materials.__file__.replace('__init__.pyc', '')
 PACKAGE_PATH = PACKAGE_PATH.replace('__init__.py', '')
 ROOT = os.path.join(PACKAGE_PATH, 'stability/tests')
+
+class StartupTest(unittest.TestCase):
+
+    def test_relax_creates_files(self):
+        os.chdir(ROOT)
+        os.chdir('BiTeCl')
+        relax(submit=False, force_overwrite=True)
+        for f in ['KPOINTS', 'INCAR', 'runjob']:
+            self.assertTrue(os.path.isfile(f))
+            os.system('rm {}'.format(f))
+
 
 class AnalysisTest(unittest.TestCase):
 

@@ -84,11 +84,13 @@ class UtilsTest(unittest.TestCase):
 
     def test_align_c_axis_for_already_aligned_structure(self):
         os.chdir(PACKAGE_PATH)
-        control_axis = [0, 0, 18.407854]
+        control_axis = [0, 0, 23.4186286267]
         structure = Structure.from_file('stability/tests/BiTeCl/POSCAR')
         structure = align_c_axis_along_001(structure)
         for i in range(3):
-            self.assertEqual(structure.lattice.matrix[2][i], control_axis[i])
+            self.assertTrue(abs(
+                structure.lattice.matrix[2][i] - control_axis[i]
+                ) < 0.0001)
 
 
     def test_get_structure_type_for_conventional_material(self):

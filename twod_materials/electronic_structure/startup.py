@@ -57,7 +57,8 @@ def run_pbe_calculation(dim=2, submit=True, force_overwrite=False):
         os.mkdir('pbe_bands')
     if force_overwrite or not is_converged('pbe_bands'):
         os.system('cp CONTCAR pbe_bands/POSCAR')
-        os.system('cp POTCAR pbe_bands/')
+        if os.path.isfile('POTCAR'):
+            os.system('cp POTCAR pbe_bands/')
         PBE_INCAR_DICT.update({'MAGMOM': get_magmom_string()})
         Incar.from_dict(PBE_INCAR_DICT).write_file('pbe_bands/INCAR')
         structure = Structure.from_file('POSCAR')
@@ -96,6 +97,8 @@ def run_hse_prep_calculation(dim=2, submit=True):
         os.mkdir('hse_prep')
     os.chdir('hse_prep')
     os.system('cp ../CONTCAR ./POSCAR')
+    if os.path.isfile('../POTCAR'):
+        os.system('cp POTCAR .')
     relax(dim=2, submit=False)
     incar_dict = Incar.from_file('INCAR').as_dict()
     incar_dict.update({'NSW': 0, 'NELM': 1, 'LWAVE': False, 'LCHARG': False,
@@ -114,16 +117,21 @@ def run_hse_prep_calculation(dim=2, submit=True):
                 kpts.write(line)
             kpts.write(kpts_lines[3].split()[0] + ' '
                        + kpts_lines[3].split()[1] + ' 1')
+
     if QUEUE == 'pbs':
-        write_pbs_runjob(directory, 1, 16, '800mb', '6:00:00', VASP)
+        write_pbs_runjob('{}_prep'.format(
+            os.getcwd().split('/')[-2]), 1, 16, '800mb', '6:00:00', VASP)
         submission_command = 'qsub runjob'
 
     elif QUEUE == 'slurm':
-        write_slurm_runjob(directory, 16, '800mb', '6:00:00', VASP)
+        write_slurm_runjob('{}_prep'.format(
+            os.getcwd().split('/')[-2]), 16, '800mb', '6:00:00', VASP)
         submission_command = 'sbatch runjob'
 
     if submit:
         os.system(submission_command)
+
+    os.chdir('../')
 
 
 def run_hse_calculation(dim=2, submit=True, force_overwrite=False,
@@ -157,7 +165,8 @@ def run_hse_calculation(dim=2, submit=True, force_overwrite=False,
     if force_overwrite or not is_converged('hse_bands'):
         os.chdir('hse_bands')
         os.system('cp ../CONTCAR ./POSCAR')
-        os.system('cp ../POTCAR ./')
+        if os.path.isfile('../POTCAR'):
+            os.system('cp POTCAR .')
         HSE_INCAR_DICT.update({'MAGMOM': get_magmom_string()})
         Incar.from_dict(HSE_INCAR_DICT).write_file('INCAR')
 
