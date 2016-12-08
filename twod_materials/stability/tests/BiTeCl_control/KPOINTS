@@ -1,4 +1,13 @@
-pymatgen generated KPOINTS with grid density = 1000 / atom
-0
-Gamma
-11 11 4
+Line_mode KPOINTS file
+20
+Line_mode
+Reciprocal
+0.0 0.0 0.0 ! \Gamma
+0.333333333333 0.333333333333 0.0 ! K
+
+0.333333333333 0.333333333333 0.0 ! K
+0.5 0.0 0.0 ! M
+
+0.5 0.0 0.0 ! M
+0.0 0.0 0.0 ! \Gamma
+

@@ -5,9 +5,12 @@ import os
 from twod_materials.stability.analysis import (get_competing_phases,
                                                get_hull_distance)
 
+import twod_materials
 
-os.chdir('twod_materials/stability/tests')
-ROOT = os.getcwd()
+
+PACKAGE_PATH = twod_materials.__file__.replace('__init__.pyc', '')
+PACKAGE_PATH = PACKAGE_PATH.replace('__init__.py', '')
+ROOT = os.path.join(PACKAGE_PATH, 'stability/tests')
 
 class AnalysisTest(unittest.TestCase):
 
