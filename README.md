@@ -19,8 +19,14 @@ restrictive, but to be streamlined.
 
 # Installation and setup #
 
-`twod_materials` must be installed through Github_. Once you've cloned its
-repository, run `pip install numpy` and then
+The latest stable release can be installed with ``pip``:
+```bash
+pip install numpy
+pip install twod_materials
+```
+
+Alternatively, the very latest (no promises) version of `twod_materials` can be installed by cloning this repository. Once you've cloned it
+on your system, run `pip install numpy` and then
 `pip install -r requirements.txt` to install its dependencies. You should then
 add its location to your system's `$PYTHONPATH` so you can import its
 functions from anywhere. There are a few ways to do this, including adding the
