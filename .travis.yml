@@ -22,7 +22,8 @@ install:
 before_script:
 - python setup.py develop
 script:
-- nosetests twod_materials
+- nosetests twod_materials --with-coverage
+- codecov
 branches:
   only:
   - master
