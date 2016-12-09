@@ -236,8 +236,10 @@ def plot_local_potential(axis=2, ylim=(-20, 0), fmt='pdf'):
     vacuum_level = max(abs_potentials)
 
     vasprun = Vasprun('vasprun.xml')
-    cbm = vasprun.get_band_structure().get_cbm()['energy'] - vacuum_level
-    vbm = vasprun.get_band_structure().get_vbm()['energy'] - vacuum_level
+    bs = vasprun.get_band_structure()
+    if not bs.is_metal():
+        cbm = bs.get_cbm()['energy'] - vacuum_level
+        vbm = bs.get_vbm()['energy'] - vacuum_level
 
     potentials = [potential - vacuum_level for potential in abs_potentials]
     axis_length = structure.lattice._lengths[axis]
@@ -255,15 +257,17 @@ def plot_local_potential(axis=2, ylim=(-20, 0), fmt='pdf'):
     ax.set_xlabel(r'$\mathrm{\AA}$', size=24)
     ax.set_ylabel(r'$\mathrm{V\/(eV)}$', size=24)
 
-    ax.text(ax.get_xlim()[1], cbm, r'$\mathrm{CBM}$',
-            horizontalalignment='right', verticalalignment='bottom', size=20)
-    ax.text(ax.get_xlim()[1], vbm, r'$\mathrm{VBM}$',
-            horizontalalignment='right', verticalalignment='top', size=20)
+    if not bs.ismetal():
+        ax.text(ax.get_xlim()[1], cbm, r'$\mathrm{CBM}$',
+                horizontalalignment='right', verticalalignment='bottom',
+                size=20)
+        ax.text(ax.get_xlim()[1], vbm, r'$\mathrm{VBM}$',
+                horizontalalignment='right', verticalalignment='top', size=20)
 
-    ax.fill_between(ax.get_xlim(), cbm, ax.get_ylim()[1],
-                    facecolor=plt.cm.jet(0.3), zorder=0, linewidth=0)
-    ax.fill_between(ax.get_xlim(), ax.get_ylim()[0], vbm,
-                    facecolor=plt.cm.jet(0.7), zorder=0, linewidth=0)
+        ax.fill_between(ax.get_xlim(), cbm, ax.get_ylim()[1],
+                        facecolor=plt.cm.jet(0.3), zorder=0, linewidth=0)
+        ax.fill_between(ax.get_xlim(), ax.get_ylim()[0], vbm,
+                        facecolor=plt.cm.jet(0.7), zorder=0, linewidth=0)
 
     plt.savefig('locpot.{}'.format(fmt))
     plt.close()
