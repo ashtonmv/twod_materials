@@ -29,14 +29,17 @@ def plot_gamma_surface(fmt='pdf'):
             docs for options.
     """
 
+    os.chdir('friction/lateral')
+
     static_dirs = [
-        d for d in os.listdir(os.getcwd()) if 'x' in d and len(d) == 3
+        d.split('x') for d in os.listdir(os.getcwd()) if 'x' in d and
+        len(d) == 3
     ]
 
     n_divs_x = max([int(d[0]) for d in static_dirs])
     n_divs_y = max([int(d[1]) for d in static_dirs])
 
-    lattice = Structure.from_file('CONTCAR').lattice
+    lattice = Structure.from_file('POSCAR').lattice
     area = np.cross(lattice._matrix[0], lattice._matrix[1])[2]
 
     ax = plt.figure(figsize=(n_divs_x * 1.2, n_divs_y * 1.2)).gca()
@@ -48,8 +51,6 @@ def plot_gamma_surface(fmt='pdf'):
 
     X_VALUES = range(n_divs_x)
     Y_VALUES = range(n_divs_y)
-
-    os.chdir('friction/lateral')
 
     not_converged = []
     for x in X_VALUES:
@@ -104,8 +105,9 @@ def plot_gamma_surface(fmt='pdf'):
     ax.axes.get_yaxis().set_ticks([])
     ax.axes.get_xaxis().set_ticks([])
 
-    plt.savefig('gamma_surface.{}'.format(fmt), transparent=True)
     os.chdir('../../')
+
+    plt.savefig('gamma_surface.{}'.format(fmt), transparent=True)
 
 
 def get_basin_and_peak_locations():
@@ -128,7 +130,7 @@ def get_basin_and_peak_locations():
     X_VALUES = range(n_divs_x)
     Y_VALUES = range(n_divs_y)
 
-    os.chdir('lateral')
+    os.chdir('friction/lateral')
 
     abs_maximum = -10000
     abs_minimum = 0
@@ -147,7 +149,7 @@ def get_basin_and_peak_locations():
             except:
                 pass
             os.chdir('../')
-    os.chdir('../')
+    os.chdir('../../')
 
     return(basin, peak)
 
@@ -162,7 +164,7 @@ def plot_friction_force(fmt='pdf'):
             docs for options.
     """
 
-    os.chdir('normal')
+    os.chdir('friction/normal')
 
     f, (ax1, ax2) = plt.subplots(2, figsize=(16, 16))
 
@@ -215,8 +217,10 @@ def plot_friction_force(fmt='pdf'):
 
     ax1.legend(loc='upper right')
     ax2.legend(loc='upper right')
+
+    os.chdir('../../')
+
     plt.savefig('F_f.{}'.format(fmt))
-    os.chdir('../')
 
 
 def plot_normal_force(basin_dir, fmt='pdf'):
@@ -232,7 +236,7 @@ def plot_normal_force(basin_dir, fmt='pdf'):
             docs for options.
     """
 
-    os.chdir('normal')
+    os.chdir('friction/normal')
     spacings = [float(dir) for dir in os.listdir(os.getcwd()) if
                 os.path.isdir(dir)]
     spacings.sort()
@@ -279,9 +283,9 @@ def plot_normal_force(basin_dir, fmt='pdf'):
     ax.plot(spacings, E, linewidth=0, marker='o', color=plt.cm.jet(0),
             markersize=10, markeredgecolor='none')
 
-    plt.savefig('F_N.{}'.format(fmt))
+    os.chdir('../../')
 
-    os.chdir('../')
+    plt.savefig('F_N.{}'.format(fmt))
 
 
 def plot_mu_vs_F_N(basin_dir, fmt='pdf'):
@@ -301,7 +305,7 @@ def plot_mu_vs_F_N(basin_dir, fmt='pdf'):
     ax = fig.gca()
     ax2 = ax.twinx()
 
-    os.chdir('normal')
+    os.chdir('friction/normal')
     spacings = [float(dir) for dir in os.listdir(os.getcwd()) if
                 os.path.isdir(dir)]
     spacings.sort()
@@ -317,9 +321,6 @@ def plot_mu_vs_F_N(basin_dir, fmt='pdf'):
     ynew = interpolate.splev(xnew, spline, der=0)
     ynew_slope = interpolate.splev(spacings, spline, der=1)
     F_N = [-y * 1.602 for y in ynew_slope]
-
-    os.chdir('../../friction/normal')
-
     F_f = []
 
     for spacing in sorted([float(spc) for spc in os.listdir(os.getcwd()) if
@@ -351,7 +352,7 @@ def plot_mu_vs_F_N(basin_dir, fmt='pdf'):
         F_f.append(max(cosx) * 1.602)
         os.chdir('../')
 
-    os.chdir('../')
+    os.chdir('../../')
 
     mu = [f / N for f, N in zip(F_f, F_N)]
 
@@ -375,7 +376,7 @@ def get_mu_vs_F_N(basin_dir):
             forces are in nN.
     """
 
-    os.chdir('normal')
+    os.chdir('friction/normal')
     spacings = [float(dir) for dir in os.listdir(os.getcwd()) if
                 os.path.isdir(dir)]
     spacings.sort()
@@ -392,7 +393,6 @@ def get_mu_vs_F_N(basin_dir):
     ynew_slope = interpolate.splev(spacings, spline, der=1)
     # Convert eV.A to nN
     F_N = [-y * 1.602 for y in ynew_slope]
-
     F_f = []
 
     for spacing in sorted([float(spc) for spc in os.listdir(os.getcwd()) if
@@ -424,7 +424,7 @@ def get_mu_vs_F_N(basin_dir):
         F_f.append(max(cosx) * 1.602)
         os.chdir('../')
 
-    os.chdir('../')
+    os.chdir('../../')
 
     mu = [f / N for f, N in zip(F_f, F_N)]
 

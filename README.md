@@ -6,9 +6,13 @@
 About twod_materials
 ====================
 
+The official documentation for `twod_materials`, which includes a pretty
+comprehensive set of tutorials, can be found
+[here](https://pythonhosted.org/twod_materials/).
+
 The [wiki pages](https://github.com/ashtonmv/twod_materials/wiki) contain the
-official maintained documentation for `twod_materials`, including a pretty
-comprehensive set of tutorials on how to use each of its modules.
+unofficial but still well-maintained documentation for `twod_materials`,
+including the tutorials.
 
 # Overview #
 

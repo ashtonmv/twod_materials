@@ -123,11 +123,11 @@ def run_gamma_calculations(submit=True, step_size=0.5):
                                  + '\n')
 
             if QUEUE == 'pbs':
-                utl.write_pbs_runjob(dir, 1, 4, '400mb', '1:00:00', VASP)
+                utl.write_pbs_runjob(dir, 1, 4, '800mb', '1:00:00', VASP)
                 submission_command = 'qsub runjob'
 
             elif QUEUE == 'slurm':
-                utl.write_slurm_runjob(dir, 4, '400mb', '1:00:00', VASP)
+                utl.write_slurm_runjob(dir, 4, '800mb', '1:00:00', VASP)
                 submission_command = 'sbatch runjob'
 
             if submit:
