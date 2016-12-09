@@ -484,7 +484,9 @@ def write_potcar(pot_path=POTENTIAL_PATH, types='None'):
         elements = lines[5].split()
         poscar.close()
 
-        potcar_symbols = loadfn(os.path.join(PACKAGE_PATH, 'potcar_symbols.yaml'))
+        potcar_symbols = loadfn(
+            os.path.join(PACKAGE_PATH, 'twod_materials/potcar_symbols.yaml')
+        )
 
         if types == 'None':
             types = [potcar_symbols[elt].replace(elt, '').replace('_', '')

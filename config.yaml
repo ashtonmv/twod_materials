@@ -1,5 +1,4 @@
-# Configure these settings and then move this
-# file to your home directory ('~/config.yaml').
+# Configure these settings for your system.
 mp_api: your_materials_project_api_key
 normal_binary: /path/to/vasp/executable
 twod_binary: /path/to/2D/vasp/executable
