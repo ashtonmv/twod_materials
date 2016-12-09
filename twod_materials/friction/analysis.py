@@ -121,7 +121,8 @@ def get_basin_and_peak_locations():
     """
 
     static_dirs = [
-        d for d in os.listdir(os.getcwd()) if 'x' in d and len(d) == 3
+        d.split('x') for d in os.listdir(os.getcwd()) if 'x' in d and
+        len(d) == 3
     ]
 
     n_divs_x = max([int(d[0]) for d in static_dirs])

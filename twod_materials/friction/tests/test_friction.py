@@ -25,7 +25,7 @@ class StartupTest(unittest.TestCase):
     def test_run_normal_force_calculations(self):
         os.chdir(ROOT)
         os.chdir('MoS2_with_lateral')
-        run_normal_force_calculations(('0x0', ), submit=False)
+        run_normal_force_calculations(('0x0', '2x5'), submit=False)
 
 
 class AnalysisTest(unittest.TestCase):
@@ -33,13 +33,13 @@ class AnalysisTest(unittest.TestCase):
     def test_get_basin_and_peak_locations(self):
         os.chdir(ROOT)
         os.chdir('MoS2_with_lateral_and_normal')
-        self.assertEqual(get_basin_and_peak_locations(), (('0x0', '3x6')))
+        self.assertEqual(get_basin_and_peak_locations(), (('2x5', '0x0')))
 
 
     def test_get_mu_vs_F_N(self):
         os.chdir(ROOT)
         os.chdir('MoS2_with_lateral_and_normal')
-        test_data = get_mu_vs_FN('0x0')
+        test_data = get_mu_vs_FN('2x5')
         control_data = {'F_N': [], 'mu': [], 'F_f': []}
         for key in control_data:
             self.assertEqual(test_data[key][0], control_data[key][0])

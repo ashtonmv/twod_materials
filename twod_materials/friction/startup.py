@@ -35,8 +35,6 @@ except Exception as e:
     print(e)
 
 
-
-
 def run_gamma_calculations(submit=True, step_size=0.5):
     """
     Setup a 2D grid of static energy calculations to plot the Gamma
@@ -181,11 +179,11 @@ def run_normal_force_calculations(basin_and_saddle_dirs,
             os.chdir('{}/{}'.format(spacing, subdirectory))
             structure = Structure.from_file('POSCAR')
             n_sites = len(structure.sites)
-            top_layer = structure.sites[n_sites / 2:]
+            top_layer = structure.sites[int(n_sites / 2):]
             bottom_of_top_layer = min(
                 [z_coord for z_coord in [site.coords[2] for site in top_layer]])
 
-            remove_indices = range(n_sites / 2, n_sites)
+            remove_indices = range(int(n_sites / 2), n_sites)
 
             structure.remove_sites(remove_indices)
             max_height = max([site.coords[2] for site in structure.sites])
@@ -202,12 +200,12 @@ def run_normal_force_calculations(basin_and_saddle_dirs,
 
             structure.to('POSCAR', 'POSCAR')
 
-            if HIPERGATOR == 1:
+            if QUEUE == 'pbs':
                 utl.write_pbs_runjob('{}_{}'.format(subdirectory, spacing), 1,
                     4, '400mb', '1:00:00', VASP)
                 submission_command = 'qsub runjob'
 
-            elif HIPERGATOR == 2:
+            elif QUEUE == 'slurm':
                 utl.write_slurm_runjob('{}_{}'.format(subdirectory, spacing), 4,
                     '400mb', '1:00:00', VASP)
                 submission_command = 'sbatch runjob'
