@@ -1,0 +1,19 @@
+#!/bin/bash
+#SBATCH --job-name=2x2
+#SBATCH -o out_%j.log
+#SBATCH -e err_%j.log
+#SBATCH --qos=hennig-b
+#SBATCH --nodes=1
+#SBATCH --ntasks=4
+#SBATCH --mem-per-cpu=400mb
+#SBATCH -t 1:00:00
+
+cd $SLURM_SUBMIT_DIR
+
+module load intel/2016.0.109
+module load openmpi/1.10.1
+module load vasp/5.4.1
+
+mpirun /path/to/vasp/executable > job.log
+
+echo 'Done.'
