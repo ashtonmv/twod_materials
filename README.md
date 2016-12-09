@@ -1,6 +1,8 @@
 [![Build Status](https://travis-ci.org/ashtonmv/twod_materials.svg?branch=master)](https://travis-ci.org/ashtonmv/twod_materials)
 [![Coverage](https://codecov.io/gh/ashtonmv/twod_materials/coverage.svg?branch=master)](https://codecov.io/gh/ashtonmv/twod_materials)
 
+![logo](https://s3.amazonaws.com/mashton/twod_materials_logo.png)
+
 About twod_materials
 ====================
 
