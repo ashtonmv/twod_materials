@@ -1,6 +1,6 @@
 # Configure these settings and then move this
 # file to your home directory ('~/config.yaml').
-mp_api: OGhB4i7zptC93fgH
+mp_api: your_materials_project_api_key
 normal_binary: /path/to/vasp/executable
 twod_binary: /path/to/2D/vasp/executable
 potentials: /path/to/POTCAR/files

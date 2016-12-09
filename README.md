@@ -6,7 +6,9 @@
 About twod_materials
 ====================
 
-The [wiki pages](https://github.com/ashtonmv/twod_materials/wiki) contain the official maintained documentation for `twod_materials`, including a pretty comprehensive set of tutorials on how to use each of its modules.
+The [wiki pages](https://github.com/ashtonmv/twod_materials/wiki) contain the
+official maintained documentation for `twod_materials`, including a pretty
+comprehensive set of tutorials on how to use each of its modules.
 
 # Overview #
 
@@ -27,7 +29,8 @@ pip install numpy
 pip install twod_materials
 ```
 
-Alternatively, the very latest (no promises) version of `twod_materials` can be installed by cloning this repository. Once you've cloned it
+Alternatively, the very latest (no promises) version of `twod_materials` can be
+installed by cloning this repository. Once you've cloned it
 on your system, run `pip install numpy` and then
 `pip install -r requirements.txt` to install its dependencies. You should then
 add its location to your system's `$PYTHONPATH` so you can import its
@@ -66,4 +69,5 @@ Throughout the package, there are a few configuration files that for the most
 part don't need to be changed (as opposed to config.yaml, which does):
 potcar_symbols.yaml and the yaml files under the `pourbaix` module.
 
-See the [tutorials](https://github.com/ashtonmv/twod_materials/wiki/Tutorial-1:-stability) for sample usage of every function in `twod_materials`.
+See the [tutorials](https://github.com/ashtonmv/twod_materials/wiki/Tutorial-1:-stability)
+for sample usage of every function in `twod_materials`.
