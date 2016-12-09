@@ -18,12 +18,13 @@ import twod_materials
 
 PACKAGE_PATH = twod_materials.__file__.replace('__init__.pyc', '')
 PACKAGE_PATH = PACKAGE_PATH.replace('__init__.py', '')
-KERNEL_PATH = os.path.join(PACKAGE_PATH, 'vdw_kernel.bindat')
+PACKAGE_PATH = '/'.join(PACKAGE_PATH.split('/')[:-2])
 
 try:
-    config_vars = loadfn(os.path.join(PACKAGE_PATH, '../config.yaml'))
+    config_vars = loadfn(os.path.join(PACKAGE_PATH, 'config.yaml'))
     VASP = config_vars['normal_binary']
     VASP_2D = config_vars['twod_binary']
+    VDW_KERNEL = config_vars['vdw_kernel']
     if 'queue_system' in config_vars:
         QUEUE = config_vars['queue_system'].lower()
     elif '/ufrc/' in os.getcwd():
@@ -96,7 +97,8 @@ def run_gamma_calculations(submit=True, step_size=0.5):
             os.system('cp ../../../INCAR .')
             os.system('cp ../../../KPOINTS .')
             os.system('cp ../POSCAR .')
-            os.system('cp {} .'.format(KERNEL_PATH))
+            if VDW_KERNEL != '/path/to/vdw_kernel.bindat':
+                os.system('cp {} .'.format(VDW_KERNEL))
 
             utl.write_potcar()
             incar_dict = Incar.from_file('INCAR').as_dict()

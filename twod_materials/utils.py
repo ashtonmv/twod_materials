@@ -23,24 +23,25 @@ import itertools as it
 
 PACKAGE_PATH = twod_materials.__file__.replace('__init__.pyc', '')
 PACKAGE_PATH = PACKAGE_PATH.replace('__init__.py', '')
+PACKAGE_PATH = '/'.join(PACKAGE_PATH.split('/')[:-2])
 
-try:
-    config_vars = loadfn(os.path.join(PACKAGE_PATH, '../config.yaml'))
-    if 'MP_API' in os.environ:
-        MPR = MPRester(os.environ['MP_API'])
-    else:
-        MPR = MPRester(config_vars['mp_api'])
-    VASP = config_vars['normal_binary']
-    VASP_2D = config_vars['twod_binary']
-    POTENTIAL_PATH = config_vars['potentials']
-    if 'queue_system' in config_vars:
-        QUEUE = config_vars['queue_system'].lower()
-    elif '/ufrc/' in os.getcwd():
-        QUEUE = 'slurm'
-    elif '/scratch/' in os.getcwd():
-        QUEUE = 'pbs'
-except Exception as e:
-    print(e)
+#try:
+config_vars = loadfn(os.path.join(PACKAGE_PATH, 'config.yaml'))
+if 'MP_API' in os.environ:
+    MPR = MPRester(os.environ['MP_API'])
+else:
+    MPR = MPRester(config_vars['mp_api'])
+VASP = config_vars['normal_binary']
+VASP_2D = config_vars['twod_binary']
+POTENTIAL_PATH = config_vars['potentials']
+if 'queue_system' in config_vars:
+    QUEUE = config_vars['queue_system'].lower()
+elif '/ufrc/' in os.getcwd():
+    QUEUE = 'slurm'
+elif '/scratch/' in os.getcwd():
+    QUEUE = 'pbs'
+#except Exception as e:
+#    print(e)
 
 
 def is_converged(directory):

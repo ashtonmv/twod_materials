@@ -16,9 +16,10 @@ import twod_materials
 
 PACKAGE_PATH = twod_materials.__file__.replace('__init__.pyc', '')
 PACKAGE_PATH = PACKAGE_PATH.replace('__init__.py', '')
+PACKAGE_PATH = '/'.join(PACKAGE_PATH.split('/')[:-2])
 
 try:
-    config_vars = loadfn(os.path.join(PACKAGE_PATH, '../config.yaml'))
+    config_vars = loadfn(os.path.join(PACKAGE_PATH, 'config.yaml'))
     if 'MP_API' in os.environ:
         MPR = MPRester(os.environ['MP_API'])
     else:

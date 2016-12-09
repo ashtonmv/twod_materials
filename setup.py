@@ -8,6 +8,7 @@ setup(
   install_requires = ['monty>=0.7.2', 'matplotlib>=1.4.2', 'nose>=1.3',
                       'scipy==0.14.0', 'pymatgen==4.2.0'],
   extras_require = {'doc': ['codecov>=2.0', 'sphinx>=1.3.1']},
+  package_data = {'config': ['config.yaml']},
   license = 'GNU',
   description = 'High throughput 2D material modules',
   author = 'Michael Ashton',

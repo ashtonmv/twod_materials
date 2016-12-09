@@ -1,7 +1,8 @@
 # Configure these settings and then move this
 # file to your home directory ('~/config.yaml').
-mp_api: your_materials_project_api_key
+mp_api: OGhB4i7zptC93fgH
 normal_binary: /path/to/vasp/executable
 twod_binary: /path/to/2D/vasp/executable
 potentials: /path/to/POTCAR/files
+vdw_kernel: /path/to/vdw_kernel.bindat  # Leave as is if hard-coded into VASP
 queue_system: slurm  # Change to pbs if working on a pbs queue.

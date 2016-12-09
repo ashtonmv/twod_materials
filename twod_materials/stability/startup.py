@@ -16,6 +16,7 @@ import twod_materials
 
 PACKAGE_PATH = twod_materials.__file__.replace('__init__.pyc', '')
 PACKAGE_PATH = PACKAGE_PATH.replace('__init__.py', '')
+PACKAGE_PATH = '/'.join(PACKAGE_PATH.split('/')[:-2])
 
 INCAR_DICT = {
     '@class': 'Incar', '@module': 'pymatgen.io.vasp.inputs', 'AGGAC': 0.0,
@@ -25,16 +26,16 @@ INCAR_DICT = {
     'PREC': 'Accurate', 'ENCUT': 500, 'SIGMA': 0.1, 'LVTOT': True,
     'LVHAR': True, 'ALGO': 'Fast', 'ISPIN': 2
     }
-KERNEL_PATH = os.path.join(PACKAGE_PATH, 'vdw_kernel.bindat')
 
 try:
-    config_vars = loadfn(os.path.join(PACKAGE_PATH, '../config.yaml'))
+    config_vars = loadfn(os.path.join(PACKAGE_PATH, 'config.yaml'))
     if 'MP_API' in os.environ:
         MPR = MPRester(os.environ['MP_API'])
     else:
         MPR = MPRester(config_vars['mp_api'])
     VASP = config_vars['normal_binary']
     VASP_2D = config_vars['twod_binary']
+    VDW_KERNEL = config_vars['vdw_kernel']
     if 'queue_system' in config_vars:
         QUEUE = config_vars['queue_system'].lower()
     elif '/ufrc/' in os.getcwd():
@@ -63,7 +64,8 @@ def relax(dim=2, submit=True, force_overwrite=False):
         directory = os.getcwd().split('/')[-1]
 
         # vdw_kernel.bindat file required for VDW calculations.
-        os.system('cp {} .'.format(KERNEL_PATH))
+        if VDW_KERNEL != '/path/to/vdw_kernel.bindat':
+            os.system('cp {} .'.format(VDW_KERNEL))
         # KPOINTS
         Kpoints.automatic_density(Structure.from_file('POSCAR'),
                                   1000).write_file('KPOINTS')

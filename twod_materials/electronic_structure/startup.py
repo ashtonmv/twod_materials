@@ -18,9 +18,10 @@ import math
 
 PACKAGE_PATH = twod_materials.__file__.replace('__init__.pyc', '')
 PACKAGE_PATH = PACKAGE_PATH.replace('__init__.py', '')
+PACKAGE_PATH = '/'.join(PACKAGE_PATH.split('/')[:-2])
 
 try:
-    config_vars = loadfn(os.path.join(PACKAGE_PATH, '../config.yaml'))
+    config_vars = loadfn(os.path.join(PACKAGE_PATH, 'config.yaml'))
     VASP = config_vars['normal_binary']
     if 'queue_system' in config_vars:
         QUEUE = config_vars['queue_system'].lower()
