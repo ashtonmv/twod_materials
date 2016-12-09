@@ -1,0 +1,203 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>The Pourbaix Module &#8212; twod_materials 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="author" title="About these documents" href="about.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="The Friction Module" href="friction_tutorial.html" />
+    <link rel="prev" title="The Electronic Structure Module" href="electronic_structure_tutorial.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="the-pourbaix-module">
+<h1>The Pourbaix Module<a class="headerlink" href="#the-pourbaix-module" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="plotting-a-pourbaix-diagram">
+<h2>Plotting a Pourbaix diagram<a class="headerlink" href="#plotting-a-pourbaix-diagram" title="Permalink to this headline">¶</a></h2>
+<p>For the most part, there is exactly one thing you should ever use this module
+for, and that&#8217;s plotting a Pourbaix diagram for a material that has been relaxed
+with the input parameters used by <code class="docutils literal"><span class="pre">twod_materials.stability.startup.relax()</span></code>.
+If you&#8217;ve used those <em>same</em> parameters, by which I mean the default POTCAR
+files, INCAR parameters, and KPOINT density, then plotting the Pourbaix diagram
+is easy:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+
+<span class="kn">from</span> <span class="nn">twod_materials.pourbaix.analysis</span> <span class="k">import</span> <span class="n">plot_pourbaix_diagram</span>
+
+
+<span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="s1">&#39;MoS2&#39;</span><span class="p">)</span>
+<span class="n">plot_pourbaix_diagram</span><span class="p">(</span><span class="n">ion_concentration</span><span class="o">=</span><span class="mi">1</span><span class="n">e</span><span class="o">-</span><span class="mi">3</span><span class="p">)</span>  <span class="c1"># Just an example.</span>
+<span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="s1">&#39;../&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>and you should have a plot named <code class="docutils literal"><span class="pre">MoS2_1e-3.pdf</span></code>. <code class="docutils literal"><span class="pre">ion_concentration</span></code> is in
+Molar, and should generally be somewhere between 1e-8 and 1. This diagram will
+tell you whether or not your 2D material is stable in water. If it is, it will
+tell you at what pH, voltage, and ion concentration it is stable. If it is not,
+it will tell you what it will probably dissolve into. Experimentalists love that
+kind of stuff.</p>
+</div>
+<div class="section" id="calibrating-the-pourbaix-module-to-a-new-parameter-set">
+<h2>Calibrating the Pourbaix Module to a new parameter set<a class="headerlink" href="#calibrating-the-pourbaix-module-to-a-new-parameter-set" title="Permalink to this headline">¶</a></h2>
+<p>I almost titled this section &#8220;Dabbling in the dark arts&#8221;, because it can be a
+really messy endeavor. I just want to reiterate that unless you have an
+extraordinarily good reason not to use the default input parameters used in
+<code class="docutils literal"><span class="pre">twod_materials</span></code>, you should just use those and don&#8217;t ask any questions. But
+let&#8217;s say that you&#8217;re possessed and really want to recalibrate the whole thing
+just so you can use a new set of parameters. I&#8217;ll tell you how to do it below,
+but before I explain how the code works, I should probably explain the &#8220;science&#8221;
+(read: black magic) behind this process.</p>
+<p>The idea is that DFT is really good at
+calculating the formation energies of solids, including 2D materials, but not
+very good at getting the formation energies of molecules and ions in solution.
+Both are important, since the Pourbaix diagram is basically a phase diagram
+between solids (your 2D material) and molecules/ions. One solution would be to
+use experimental formation energies for everything, but then the
+problem is that your 2D material&#8217;s formation energy is probably not in any
+experimental database. So you just have to use DFT to get the formation energy
+of your 2D material and experimental databases for solvated ions. To account for
+the obvious discontinuity between these two methods, a &#8220;correction&#8221; needs to be
+applied to the experimental formation energies. We assume that this &#8220;correction&#8221;
+can be calculated for each element individually as the difference between the
+DFT-calculated formation energy of a simple oxide containing that element
+(<em>e.g.</em> MoO2 for Mo) and the experimentally calculated formation energy of that
+same oxide. The &#8220;correction&#8221; should be in units of eV/Mo atom in
+this example, and then it can be applied to the formation energy of every
+solvated ion that contains Mo. If a molecule has two Mo atoms in it, like
+Mo2(OH)2, then the correction is added to that molecule twice, and so on.</p>
+<p>There are more things happening under the hood here; for example, a special
+correction has to be added to the diatomic elements (H, Br, I, N, O, F, Cl) to
+account for their gas phase entropy. The <code class="docutils literal"><span class="pre">Calibrator</span></code> object in
+<code class="docutils literal"><span class="pre">twod_materials.pourbaix.startup</span></code> is designed to handle all of these
+corrections. To use it, you need to run something like this, probably in a
+unique directory named after the calibration set you&#8217;re using:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">twod_materials.pourbaix.startup</span> <span class="k">import</span> <span class="n">Calibrator</span>
+
+
+<span class="n">potcar_symbols</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Mo&#39;</span><span class="p">:</span> <span class="s1">&#39;sv&#39;</span><span class="p">,</span> <span class="s1">&#39;S&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;O&#39;</span><span class="p">:</span> <span class="s1">&#39;pv&#39;</span><span class="p">}</span>
+<span class="n">incar_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;EDIFF&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="n">e</span><span class="o">-</span><span class="mi">6</span><span class="p">,</span> <span class="o">...</span><span class="p">}</span>
+
+<span class="n">Calibrator</span><span class="p">(</span><span class="n">incar_dict</span><span class="p">,</span> <span class="n">potcar_symbols</span><span class="p">,</span>
+           <span class="n">n_kpts_per_atom</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span><span class="o">.</span><span class="n">prepare</span><span class="p">(</span><span class="n">submit</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The script above will submit jobs for Mo, S, and their oxides with the POTCAR
+files, INCAR parameters, and KPOINTS densities specified. You need to put <em>all</em>
+of your INCAR parameters into incar_dict, and you <em>need</em> to include
+oxygen in the potcar_symbols. Now your directory structure should look something
+like this:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Mo</span><span class="o">/</span>
+  <span class="n">input_files</span><span class="o">...</span>
+  <span class="n">ref</span><span class="o">/</span>
+    <span class="n">input_files</span><span class="o">...</span>
+<span class="n">S</span><span class="o">/</span>
+  <span class="n">input_files</span><span class="o">...</span>  <span class="c1"># S has no solid oxide, so it gets no correction.</span>
+<span class="n">O</span><span class="o">/</span>
+  <span class="n">input_files</span><span class="o">...</span>
+</pre></div>
+</div>
+<p>and then, once all of the calculations are finished running, you can calculate
+all the corrections for each element by running:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">twod_materials.pourbaix.startup</span> <span class="k">import</span> <span class="n">Calibrator</span>
+
+
+<span class="n">Calibrator</span><span class="o">.</span><span class="n">get_corrections</span><span class="p">(</span><span class="n">write_yaml</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>That will write an <code class="docutils literal"><span class="pre">ion_corrections.yaml</span></code> file with all of your element names
+and their corrections in eV/atom. You can replace the corrections in
+<code class="docutils literal"><span class="pre">ions.yaml</span></code> in the pourbaix module with these values. It should also give you
+the energies of the elemental phases in <code class="docutils literal"><span class="pre">end_members.yaml</span></code>; insert these
+values into the <code class="docutils literal"><span class="pre">end_members.yaml</span></code> in the pourbaix module as well.</p>
+<p>Now you are ready to plot the pourbaix diagram just like in the example at the
+top of the page. Wasn&#8217;t that fun?</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">The Pourbaix Module</a><ul>
+<li><a class="reference internal" href="#plotting-a-pourbaix-diagram">Plotting a Pourbaix diagram</a></li>
+<li><a class="reference internal" href="#calibrating-the-pourbaix-module-to-a-new-parameter-set">Calibrating the Pourbaix Module to a new parameter set</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="examples.html">Tutorials</a><ul>
+      <li>Previous: <a href="electronic_structure_tutorial.html" title="previous chapter">The Electronic Structure Module</a></li>
+      <li>Next: <a href="friction_tutorial.html" title="next chapter">The Friction Module</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, Michael Ashton.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

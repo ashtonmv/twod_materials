@@ -1,0 +1,422 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Electronic Structure &#8212; twod_materials 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="author" title="About these documents" href="about.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Pourbaix" href="pourbaix.html" />
+    <link rel="prev" title="Stability" href="stability.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="electronic-structure">
+<h1>Electronic Structure<a class="headerlink" href="#electronic-structure" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-twod_materials.electronic_structure.startup">
+<span id="startup"></span><h2>Startup<a class="headerlink" href="#module-twod_materials.electronic_structure.startup" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="twod_materials.electronic_structure.startup.run_hse_calculation">
+<code class="descclassname">twod_materials.electronic_structure.startup.</code><code class="descname">run_hse_calculation</code><span class="sig-paren">(</span><em>dim=2</em>, <em>submit=True</em>, <em>force_overwrite=False</em>, <em>destroy_prep_directory=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twod_materials/electronic_structure/startup.html#run_hse_calculation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twod_materials.electronic_structure.startup.run_hse_calculation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Setup/submit an HSE06 calculation to get an accurate band structure.
+Requires a previous IBZKPT from a standard DFT run. See
+<a class="reference external" href="http://cms.mpi.univie.ac.at/wiki/index.php/Si_bandstructure">http://cms.mpi.univie.ac.at/wiki/index.php/Si_bandstructure</a> for more
+details.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>dim</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; 2 for relaxing a 2D material, 3 for a 3D material.</li>
+<li><strong>submit</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) &#8211; Whether or not to submit the job.</li>
+<li><strong>force_overwrite</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) &#8211; Whether or not to overwrite files
+if an already converged vasprun.xml exists in the
+directory.</li>
+<li><strong>destroy_prep_directory</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) &#8211; whether or not to remove
+(rm -r) the hse_prep directory, if it exists. This
+can help you to automatically clean up and save space.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="twod_materials.electronic_structure.startup.run_hse_prep_calculation">
+<code class="descclassname">twod_materials.electronic_structure.startup.</code><code class="descname">run_hse_prep_calculation</code><span class="sig-paren">(</span><em>dim=2</em>, <em>submit=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twod_materials/electronic_structure/startup.html#run_hse_prep_calculation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twod_materials.electronic_structure.startup.run_hse_prep_calculation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Submits a quick static calculation to calculate the IBZKPT
+file using a smaller number of k-points (200/atom instead of
+1000/atom). The other outputs from this calculation are
+essentially useless.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>dim</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; 2 for relaxing a 2D material, 3 for a 3D material.</li>
+<li><strong>submit</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) &#8211; Whether or not to submit the job.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="twod_materials.electronic_structure.startup.run_pbe_calculation">
+<code class="descclassname">twod_materials.electronic_structure.startup.</code><code class="descname">run_pbe_calculation</code><span class="sig-paren">(</span><em>dim=2</em>, <em>submit=True</em>, <em>force_overwrite=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twod_materials/electronic_structure/startup.html#run_pbe_calculation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twod_materials.electronic_structure.startup.run_pbe_calculation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Setup and submit a normal PBE calculation for band structure along
+high symmetry k-paths.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>dim</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; 2 for relaxing a 2D material, 3 for a 3D material.</li>
+<li><strong>submit</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) &#8211; Whether or not to submit the job.</li>
+<li><strong>force_overwrite</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) &#8211; Whether or not to overwrite files
+if an already converged vasprun.xml exists in the
+directory.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="analysis">
+<h2>Analysis<a class="headerlink" href="#analysis" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-twod_materials.electronic_structure.analysis"></span><dl class="function">
+<dt id="twod_materials.electronic_structure.analysis.find_dirac_nodes">
+<code class="descclassname">twod_materials.electronic_structure.analysis.</code><code class="descname">find_dirac_nodes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/twod_materials/electronic_structure/analysis.html#find_dirac_nodes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twod_materials.electronic_structure.analysis.find_dirac_nodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Look for band crossings near (within <cite>tol</cite> eV) the Fermi level.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><dl class="docutils">
+<dt>boolean. Whether or not a band crossing occurs at or near</dt>
+<dd>the fermi level.</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="twod_materials.electronic_structure.analysis.get_band_edges">
+<code class="descclassname">twod_materials.electronic_structure.analysis.</code><code class="descname">get_band_edges</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/twod_materials/electronic_structure/analysis.html#get_band_edges"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twod_materials.electronic_structure.analysis.get_band_edges" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the band edge locations relative to the vacuum level
+for a semiconductor. If spin-polarized, returns all 4 band edges.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="twod_materials.electronic_structure.analysis.get_effective_mass">
+<code class="descclassname">twod_materials.electronic_structure.analysis.</code><code class="descname">get_effective_mass</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/twod_materials/electronic_structure/analysis.html#get_effective_mass"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twod_materials.electronic_structure.analysis.get_effective_mass" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function is in a beta stage, and its results are not
+guaranteed to be useful.</p>
+<p>Finds effective masses from a band structure, using parabolic
+fitting to determine the band curvature at the CBM
+for electrons and at the VBM for holes. This curvature enters
+the equation m* = (hbar)**2 / (d^2E/dk^2).</p>
+<p>To consider anisotropy, the k-space directions to the left and right
+of the CBM/VBM in the band diagram are returned separately.</p>
+<dl class="docutils">
+<dt><em>NOTE</em> Only works for semiconductors and linemode calculations (non-</dt>
+<dd>spin polarized).
+&gt;30 k-points per string recommended to obtain
+reliable curvatures.</dd>
+<dt><em>NOTE</em> The parabolic fit can be quite sensitive to the number of</dt>
+<dd>k-points fit to, so it might be worthwhile adjusting N_KPTS
+to obtain some sense of the error bar.</dd>
+<dt>TODO: Warn user if CBM/VBM is at the edge of the diagram, and which</dt>
+<dd>direction (either left or right) was not actually fit to.
+Until fixed, this (most likely) explains any negative masses
+returned.</dd>
+</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><dl class="docutils">
+<dt>Dictionary of the form</dt>
+<dd><dl class="first docutils">
+<dt>{&#8216;electron&#8217;: {&#8216;left&#8217;: e_m_eff_l, &#8216;right&#8217;: e_m_eff_r},</dt>
+<dd>&#8216;hole&#8217;: {&#8216;left&#8217;: h_m_eff_l, &#8216;right&#8217;: h_m_eff_r}}</dd>
+</dl>
+<p class="last">where &#8216;left&#8217; and &#8216;right&#8217; indicate the reciprocal
+directions to the left and right of the extremum in the
+band structure.</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="twod_materials.electronic_structure.analysis.plot_band_alignments">
+<code class="descclassname">twod_materials.electronic_structure.analysis.</code><code class="descname">plot_band_alignments</code><span class="sig-paren">(</span><em>directories</em>, <em>run_type=u'PBE'</em>, <em>fmt=u'pdf'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twod_materials/electronic_structure/analysis.html#plot_band_alignments"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twod_materials.electronic_structure.analysis.plot_band_alignments" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot CBM&#8217;s and VBM&#8217;s of all compounds together, relative to the band
+edges of H2O.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>directories</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#list" title="(in Python v2.7)"><em>list</em></a>) &#8211; list of the directory paths for materials
+to include in the plot.</li>
+<li><strong>run_type</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; &#8216;PBE&#8217; or &#8216;HSE&#8217;, so that the function knows which
+subdirectory to go into (pbe_bands or hse_bands).</li>
+<li><strong>fmt</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; matplotlib format style. Check the matplotlib
+docs for options.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="twod_materials.electronic_structure.analysis.plot_band_structure">
+<code class="descclassname">twod_materials.electronic_structure.analysis.</code><code class="descname">plot_band_structure</code><span class="sig-paren">(</span><em>ylim=(-5</em>, <em>5)</em>, <em>draw_fermi=False</em>, <em>fmt=u'pdf'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twod_materials/electronic_structure/analysis.html#plot_band_structure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twod_materials.electronic_structure.analysis.plot_band_structure" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot a standard band structure with no projections.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>ylim</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#tuple" title="(in Python v2.7)"><em>tuple</em></a>) &#8211; minimum and maximum potentials for the plot&#8217;s
+y-axis.</li>
+<li><strong>draw_fermi</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) &#8211; whether or not to draw a dashed line at
+E_F.</li>
+<li><strong>fmt</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; matplotlib format style. Check the matplotlib
+docs for options.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="twod_materials.electronic_structure.analysis.plot_color_projected_bands">
+<code class="descclassname">twod_materials.electronic_structure.analysis.</code><code class="descname">plot_color_projected_bands</code><span class="sig-paren">(</span><em>ylim=(-5</em>, <em>5)</em>, <em>fmt=u'pdf'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twod_materials/electronic_structure/analysis.html#plot_color_projected_bands"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twod_materials.electronic_structure.analysis.plot_color_projected_bands" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot a single band structure where the color of the band indicates
+the elemental character of the eigenvalue.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>ylim</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#tuple" title="(in Python v2.7)"><em>tuple</em></a>) &#8211; minimum and maximum energies for the plot&#8217;s
+y-axis.</li>
+<li><strong>fmt</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; matplotlib format style. Check the matplotlib
+docs for options.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="twod_materials.electronic_structure.analysis.plot_density_of_states">
+<code class="descclassname">twod_materials.electronic_structure.analysis.</code><code class="descname">plot_density_of_states</code><span class="sig-paren">(</span><em>fmt=u'pdf'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twod_materials/electronic_structure/analysis.html#plot_density_of_states"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twod_materials.electronic_structure.analysis.plot_density_of_states" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plots the density of states from the DOSCAR in the cwd. Plots
+spin up in red, down in green, and the sum in black. Efermi = 0.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>fmt</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; matplotlib format style. Check the matplotlib
+docs for options.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="twod_materials.electronic_structure.analysis.plot_elt_projected_bands">
+<code class="descclassname">twod_materials.electronic_structure.analysis.</code><code class="descname">plot_elt_projected_bands</code><span class="sig-paren">(</span><em>ylim=(-5</em>, <em>5)</em>, <em>fmt=u'pdf'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twod_materials/electronic_structure/analysis.html#plot_elt_projected_bands"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twod_materials.electronic_structure.analysis.plot_elt_projected_bands" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot separate band structures for each element where the size of the
+markers indicates the elemental character of the eigenvalue.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>ylim</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#tuple" title="(in Python v2.7)"><em>tuple</em></a>) &#8211; minimum and maximum energies for the plot&#8217;s
+y-axis.</li>
+<li><strong>fmt</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; matplotlib format style. Check the matplotlib
+docs for options.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="twod_materials.electronic_structure.analysis.plot_local_potential">
+<code class="descclassname">twod_materials.electronic_structure.analysis.</code><code class="descname">plot_local_potential</code><span class="sig-paren">(</span><em>axis=2</em>, <em>ylim=(-20</em>, <em>0)</em>, <em>fmt=u'pdf'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twod_materials/electronic_structure/analysis.html#plot_local_potential"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twod_materials.electronic_structure.analysis.plot_local_potential" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot data from the LOCPOT file along any of the 3 primary axes.
+Useful for determining surface dipole moments and electric
+potentials on the interior of the material.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>axis</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; 0 = x, 1 = y, 2 = z</li>
+<li><strong>ylim</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#tuple" title="(in Python v2.7)"><em>tuple</em></a>) &#8211; minimum and maximum potentials for the plot&#8217;s
+y-axis.</li>
+<li><strong>fmt</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; matplotlib format style. Check the matplotlib
+docs for options.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="twod_materials.electronic_structure.analysis.plot_orb_projected_bands">
+<code class="descclassname">twod_materials.electronic_structure.analysis.</code><code class="descname">plot_orb_projected_bands</code><span class="sig-paren">(</span><em>orbitals</em>, <em>fmt=u'pdf'</em>, <em>ylim=(-5</em>, <em>5)</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twod_materials/electronic_structure/analysis.html#plot_orb_projected_bands"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twod_materials.electronic_structure.analysis.plot_orb_projected_bands" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot a separate band structure for each orbital of each element in
+orbitals.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>orbitals</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) &#8211; dictionary of the form
+{element: [orbitals]},
+e.g. {&#8216;Mo&#8217;: [&#8216;s&#8217;, &#8216;p&#8217;, &#8216;d&#8217;], &#8216;S&#8217;: [&#8216;p&#8217;]}</li>
+<li><strong>ylim</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#tuple" title="(in Python v2.7)"><em>tuple</em></a>) &#8211; minimum and maximum energies for the plot&#8217;s
+y-axis.</li>
+<li><strong>fmt</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; matplotlib format style. Check the matplotlib
+docs for options.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="twod_materials.electronic_structure.analysis.plot_spin_texture">
+<code class="descclassname">twod_materials.electronic_structure.analysis.</code><code class="descname">plot_spin_texture</code><span class="sig-paren">(</span><em>inner_index</em>, <em>outer_index</em>, <em>center=(0</em>, <em>0)</em>, <em>fmt=u'pdf'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twod_materials/electronic_structure/analysis.html#plot_spin_texture"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twod_materials.electronic_structure.analysis.plot_spin_texture" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create six plots- one for the spin texture in x, y, and z in
+each of two bands: an inner band and an outer band. For
+Rashba spin-splitting, these two bands should be the two that
+have split.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>outer_index</strong> (<em>inner_index</em><em>,</em><em></em>) &#8211; indices of the two spin-split
+bands.</li>
+<li><strong>center</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#tuple" title="(in Python v2.7)"><em>tuple</em></a>) &#8211; coordinates of the center of the splitting
+(where the bands cross). Defaults to Gamma.</li>
+<li><strong>fmt</strong> &#8211; matplotlib format style. Check the matplotlib
+docs for options.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Electronic Structure</a><ul>
+<li><a class="reference internal" href="#module-twod_materials.electronic_structure.startup">Startup</a></li>
+<li><a class="reference internal" href="#analysis">Analysis</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="stability.html" title="previous chapter">Stability</a></li>
+      <li>Next: <a href="pourbaix.html" title="next chapter">Pourbaix</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, Michael Ashton.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

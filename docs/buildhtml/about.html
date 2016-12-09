@@ -1,0 +1,153 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>About twod_materials &#8212; twod_materials 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="author" title="About these documents" href="#" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Tutorials" href="examples.html" />
+    <link rel="prev" title="Support" href="support.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="about-twod-materials">
+<h1>About twod_materials<a class="headerlink" href="#about-twod-materials" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
+<p><code class="docutils literal"><span class="pre">twod_materials</span></code> is a library of functions that I&#8217;ve used in my research on
+discovering and characterizing 2D materials. Some of them I have used thousands
+of times, and others I have used less than five times. The functions in
+<code class="docutils literal"><span class="pre">twod_materials</span></code> have been designed with user-friendliness as a priority,
+which occasionally comes at the expense of flexibility. For example, some of the
+post-processing functions will assume you have used a certain directory
+structure when organizing your calculations. The goal here was not to be
+restrictive, but to be streamlined.</p>
+</div>
+<div class="section" id="installation-and-setup">
+<h2>Installation and setup<a class="headerlink" href="#installation-and-setup" title="Permalink to this headline">¶</a></h2>
+<p><code class="docutils literal"><span class="pre">twod_materials</span></code> must be installed through <a class="reference external" href="http://github.com/ashtonmv/twod_materials">Github</a>. Once you&#8217;ve cloned its
+repository, run <code class="docutils literal"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">numpy</span></code> and then
+<code class="docutils literal"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">-r</span> <span class="pre">requirements.txt</span></code> to install its dependencies. You should then
+add its location to your system&#8217;s <code class="docutils literal"><span class="pre">$PYTHONPATH</span></code> so you can import its
+functions from anywhere. There are a few ways to do this, including adding the
+following line to your <code class="docutils literal"><span class="pre">~/.bashrc</span></code> file:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>export PYTHONPATH=$PYTHONPATH:/path/to/twod_materials  # obviously change this
+</pre></div>
+</div>
+<p>Edit config.yaml with your system&#8217;s settings, following the template:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">mp_api</span><span class="p">:</span> <span class="n">your_materials_project_api_key</span>
+<span class="n">normal_binary</span><span class="p">:</span> <span class="n">path_to_normal_vasp_executable</span>
+<span class="n">twod_binary</span><span class="p">:</span> <span class="n">path_to_twod_vasp_executable</span>
+<span class="n">potentials</span><span class="p">:</span> <span class="n">path_to_your_vasp_potentials</span>
+<span class="n">queue_system</span><span class="p">:</span> <span class="n">slurm_or_pbs</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="how-the-package-is-structured">
+<h2>How the package is structured<a class="headerlink" href="#how-the-package-is-structured" title="Permalink to this headline">¶</a></h2>
+<p>There are five mature modules in <code class="docutils literal"><span class="pre">twod_materials</span></code>: <code class="docutils literal"><span class="pre">stability</span></code>,
+<code class="docutils literal"><span class="pre">electronic_structure</span></code>, <code class="docutils literal"><span class="pre">pourbaix</span></code>, <code class="docutils literal"><span class="pre">friction</span></code>, and <code class="docutils literal"><span class="pre">intercalation</span></code>.
+The <code class="docutils literal"><span class="pre">magnetism</span></code> module is, for now, still in its infancy. The <code class="docutils literal"><span class="pre">utils</span></code> module
+is basically just a library of helper functions used throughout the other
+packages.</p>
+<p>Each of these modules has two submodules: <code class="docutils literal"><span class="pre">startup</span></code> and <code class="docutils literal"><span class="pre">analysis</span></code>. For
+most modules, <code class="docutils literal"><span class="pre">startup</span></code> contains functions that set up and submit VASP
+calculations by interacting with your machine&#8217;s queue system (PBS or SLURM). It
+might be helpful to think of the <code class="docutils literal"><span class="pre">startup</span></code> submodules as pre-processing tools.
+The <code class="docutils literal"><span class="pre">analysis</span></code> submodules, then, contain post-processing functions. These
+post-processing functions can be grouped into two main categories: functions for
+analyzing data and functions for plotting it. All plotting functions use
+<code class="docutils literal"><span class="pre">matplotlib</span></code>.</p>
+<p>Throughout the package, there are a few configuration files that for the most
+part don&#8217;t need to be changed (as opposed to config.yaml, which does):
+potcar_symbols.yaml and the yaml files under the <code class="docutils literal"><span class="pre">pourbaix</span></code> module.</p>
+<p>See the tutorials for sample usage of every function in <code class="docutils literal"><span class="pre">twod_materials</span></code>.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">About twod_materials</a><ul>
+<li><a class="reference internal" href="#overview">Overview</a></li>
+<li><a class="reference internal" href="#installation-and-setup">Installation and setup</a></li>
+<li><a class="reference internal" href="#how-the-package-is-structured">How the package is structured</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="support.html" title="previous chapter">Support</a></li>
+      <li>Next: <a href="examples.html" title="next chapter">Tutorials</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, Michael Ashton.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,274 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Friction &#8212; twod_materials 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="author" title="About these documents" href="about.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Intercalation" href="intercalation.html" />
+    <link rel="prev" title="Pourbaix" href="pourbaix.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="friction">
+<h1>Friction<a class="headerlink" href="#friction" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-twod_materials.friction.startup">
+<span id="startup"></span><h2>Startup<a class="headerlink" href="#module-twod_materials.friction.startup" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="twod_materials.friction.startup.run_gamma_calculations">
+<code class="descclassname">twod_materials.friction.startup.</code><code class="descname">run_gamma_calculations</code><span class="sig-paren">(</span><em>submit=True</em>, <em>step_size=0.5</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twod_materials/friction/startup.html#run_gamma_calculations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twod_materials.friction.startup.run_gamma_calculations" title="Permalink to this definition">¶</a></dt>
+<dd><p>Setup a 2D grid of static energy calculations to plot the Gamma
+surface between two layers of the 2D material. These calculations
+are run and stored in subdirectories under &#8216;friction/lateral&#8217;.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>submit</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) &#8211; Whether or not to submit the jobs.</li>
+<li><strong>step_size</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) &#8211; the distance between grid points in
+Angstroms.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="twod_materials.friction.startup.run_normal_force_calculations">
+<code class="descclassname">twod_materials.friction.startup.</code><code class="descname">run_normal_force_calculations</code><span class="sig-paren">(</span><em>basin_and_saddle_dirs</em>, <em>spacings=array([ 1.5</em>, <em>1.75</em>, <em>2.</em>, <em>2.25</em>, <em>2.5</em>, <em>2.75</em>, <em>3.</em>, <em>3.25</em>, <em>3.5</em>, <em>3.75</em>, <em>4.  ])</em>, <em>submit=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twod_materials/friction/startup.html#run_normal_force_calculations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twod_materials.friction.startup.run_normal_force_calculations" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set up and run static calculations of the basin directory and
+saddle directory at specified interlayer spacings to get f_N and
+f_F.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>basin_and_saddle_dirs</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#tuple" title="(in Python v2.7)"><em>tuple</em></a>) &#8211; <p>Can be obtained by the
+get_basin_and_peak_locations() function under
+friction.analysis. For example,</p>
+<p>run_normal_force_calculations((&#8216;0x0&#8217;, &#8216;3x6&#8217;))</p>
+<p>or</p>
+<p>run_normal_force_calculations(get_basin_and_peak_locations())</p>
+<p>will both work.</p>
+</li>
+<li><strong>spacings</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#list" title="(in Python v2.7)"><em>list</em></a>) &#8211; list of interlayer spacings (in Angstroms,
+as floats) at which to run the calculations.</li>
+<li><strong>submit</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) &#8211; Whether or not to submit the jobs.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-twod_materials.friction.analysis">
+<span id="analysis"></span><h2>Analysis<a class="headerlink" href="#module-twod_materials.friction.analysis" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="twod_materials.friction.analysis.get_basin_and_peak_locations">
+<code class="descclassname">twod_materials.friction.analysis.</code><code class="descname">get_basin_and_peak_locations</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/twod_materials/friction/analysis.html#get_basin_and_peak_locations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twod_materials.friction.analysis.get_basin_and_peak_locations" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find which directories inside &#8216;friction/lateral&#8217; represent
+the minimum (basin) and maximum (peak) energy stacking
+configurations.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">tuple. Of the form (basin, peak).</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="twod_materials.friction.analysis.get_mu_vs_F_N">
+<code class="descclassname">twod_materials.friction.analysis.</code><code class="descname">get_mu_vs_F_N</code><span class="sig-paren">(</span><em>basin_dir</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twod_materials/friction/analysis.html#get_mu_vs_F_N"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twod_materials.friction.analysis.get_mu_vs_F_N" title="Permalink to this definition">¶</a></dt>
+<dd><p>Essentially the same function as plotting, but without the plot.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>basin_dir</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; directory corresponding to the minimum
+energy on the gamma surface. Generally obtained by the
+get_basin_and_peak_locations() function.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="docutils">
+<dt>F_N, &#8216;mu&#8217;: mu, &#8216;F_f&#8217;: F_f}, where</dt>
+<dd>forces are in nN.</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">dict. Of the form {&#8216;F_N&#8217;</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="twod_materials.friction.analysis.plot_friction_force">
+<code class="descclassname">twod_materials.friction.analysis.</code><code class="descname">plot_friction_force</code><span class="sig-paren">(</span><em>fmt=u'pdf'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twod_materials/friction/analysis.html#plot_friction_force"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twod_materials.friction.analysis.plot_friction_force" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot the sinusoidal curve of delta E between basin and saddle
+points for each normal spacing dz.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>fmt</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; matplotlib format style. Check the matplotlib
+docs for options.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="twod_materials.friction.analysis.plot_gamma_surface">
+<code class="descclassname">twod_materials.friction.analysis.</code><code class="descname">plot_gamma_surface</code><span class="sig-paren">(</span><em>fmt=u'pdf'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twod_materials/friction/analysis.html#plot_gamma_surface"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twod_materials.friction.analysis.plot_gamma_surface" title="Permalink to this definition">¶</a></dt>
+<dd><p>Collect the energies from a grid of static energy
+calculations to plot the Gamma surface between two layers of the 2D
+material.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>fmt</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; matplotlib format style. Check the matplotlib
+docs for options.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="twod_materials.friction.analysis.plot_mu_vs_F_N">
+<code class="descclassname">twod_materials.friction.analysis.</code><code class="descname">plot_mu_vs_F_N</code><span class="sig-paren">(</span><em>basin_dir</em>, <em>fmt=u'pdf'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twod_materials/friction/analysis.html#plot_mu_vs_F_N"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twod_materials.friction.analysis.plot_mu_vs_F_N" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot friction coefficient &#8216;mu&#8217; vs. F_Normal.
+mu = F_friction / F_Normal.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>basin_dir</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; directory corresponding to the minimum
+energy on the gamma surface. Generally obtained by the
+get_basin_and_peak_locations() function.</li>
+<li><strong>fmt</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; matplotlib format style. Check the matplotlib
+docs for options.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="twod_materials.friction.analysis.plot_normal_force">
+<code class="descclassname">twod_materials.friction.analysis.</code><code class="descname">plot_normal_force</code><span class="sig-paren">(</span><em>basin_dir</em>, <em>fmt=u'pdf'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twod_materials/friction/analysis.html#plot_normal_force"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twod_materials.friction.analysis.plot_normal_force" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot the LJ-like curve of the energy at the basin point
+as a function of normal spacing dz.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>basin_dir</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; directory corresponding to the minimum
+energy on the gamma surface. Generally obtained by the
+get_basin_and_peak_locations() function.</li>
+<li><strong>fmt</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; matplotlib format style. Check the matplotlib
+docs for options.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Friction</a><ul>
+<li><a class="reference internal" href="#module-twod_materials.friction.startup">Startup</a></li>
+<li><a class="reference internal" href="#module-twod_materials.friction.analysis">Analysis</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="pourbaix.html" title="previous chapter">Pourbaix</a></li>
+      <li>Next: <a href="intercalation.html" title="next chapter">Intercalation</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, Michael Ashton.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

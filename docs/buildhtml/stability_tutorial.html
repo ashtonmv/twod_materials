@@ -1,0 +1,209 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>The Stability Module &#8212; twod_materials 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="author" title="About these documents" href="about.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="The Electronic Structure Module" href="electronic_structure_tutorial.html" />
+    <link rel="prev" title="Tutorials" href="examples.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="the-stability-module">
+<h1>The Stability Module<a class="headerlink" href="#the-stability-module" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="basic-relaxation">
+<h2>Basic Relaxation<a class="headerlink" href="#basic-relaxation" title="Permalink to this headline">¶</a></h2>
+<p>Let&#8217;s start with the most basic thing we routinely have to do in VASP: relax a
+structure. Assuming you already have a valid POSCAR file for our material (You
+can download one for MoS2 <strong>here</strong> and then follow this tutorial literally), you
+can place it in a directory named after its formula (<em>You can name the directory
+whatever you want, but the formula name seems to make sense</em>). Then, all you
+have to do is run the following as a script or interactive (ipython) session:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+
+<span class="kn">from</span> <span class="nn">twod_materials.stability.startup</span> <span class="k">import</span> <span class="n">relax</span>
+
+
+<span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="s1">&#39;MoS2&#39;</span><span class="p">)</span>
+<span class="n">relax</span><span class="p">()</span>
+<span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="s1">&#39;../&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>and the job is submitted to the queue. Your directory should look something like
+this:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">MoS2</span><span class="o">/</span>
+  <span class="n">POSCAR</span>   <span class="n">KPOINTS</span>   <span class="n">INCAR</span>   <span class="n">POTCAR</span>   <span class="n">vdw_kernel</span><span class="o">.</span><span class="n">bindat</span>   <span class="n">runjob</span>
+</pre></div>
+</div>
+<p>where runjob is the queue system submission script. There may also be additional
+VASP output files in there if your job has already started running.</p>
+</div>
+<div class="section" id="finding-and-relaxing-competing-phases">
+<h2>Finding and relaxing competing phases<a class="headerlink" href="#finding-and-relaxing-competing-phases" title="Permalink to this headline">¶</a></h2>
+<p>In the meantime, you can relax the structures of your material&#8217;s competing
+phases. This will be necessary to understand its thermodynamic stability, and
+it&#8217;s pretty easy to do, so you should probably do it sooner rather than later.</p>
+<p>To do this, you need to find out what the competing phases are and then relax
+them. The script below will do both of these things for us:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+
+<span class="kn">from</span> <span class="nn">twod_materials.stability.startup</span> <span class="k">import</span> <span class="n">relax</span>
+<span class="kn">from</span> <span class="nn">twod_materials.stability.analysis</span> <span class="k">import</span> <span class="n">get_competing_phases</span>
+<span class="kn">from</span> <span class="nn">twod_materials.utils</span> <span class="k">import</span> <span class="n">get_structure_by_mpid</span>
+
+
+<span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="s1">&#39;competing_phases&#39;</span><span class="p">):</span>
+  <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="s1">&#39;competing_phases&#39;</span><span class="p">)</span>
+
+<span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="s1">&#39;MoS2&#39;</span><span class="p">)</span>
+<span class="n">competing_phases</span> <span class="o">=</span> <span class="n">get_competing_phases</span><span class="p">()</span>
+<span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="s1">&#39;../&#39;</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">competing_phase</span> <span class="ow">in</span> <span class="n">competing_phases</span><span class="p">:</span>
+  <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="s1">&#39;competing_phases/</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">competing_phase</span><span class="p">[</span><span class="mi">0</span><span class="p">])):</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="s1">&#39;competing_phases/</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">competing_phase</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+  <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="s1">&#39;competing_phases/</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">competing_phase</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+  <span class="n">get_structure_by_mpid</span><span class="p">(</span><span class="n">competing_phase</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;POSCAR&#39;</span><span class="p">,</span> <span class="s1">&#39;POSCAR&#39;</span><span class="p">)</span>
+  <span class="n">relax</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+  <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="s1">&#39;../&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal"><span class="pre">competing_phases</span></code> is just what I like to call the directory; you can name it
+anything, but certain other functions in twod_materials assume it is called
+<code class="docutils literal"><span class="pre">competing_phases</span></code>. Of course you can override this by specifying its name
+explicitly when calling those functions.</p>
+<p>Now your directories should look like this:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">MoS2</span><span class="o">/</span>
+  <span class="n">POSCAR</span>   <span class="n">KPOINTS</span>   <span class="n">INCAR</span>   <span class="n">POTCAR</span>   <span class="n">vdw_kernel</span><span class="o">.</span><span class="n">bindat</span>   <span class="n">runjob</span>
+<span class="n">competing_phases</span><span class="o">/</span>
+  <span class="n">MoS2</span><span class="o">/</span>
+    <span class="n">POSCAR</span>   <span class="n">KPOINTS</span>   <span class="n">INCAR</span>   <span class="n">POTCAR</span>   <span class="n">vdw_kernel</span><span class="o">.</span><span class="n">bindat</span>   <span class="n">runjob</span>
+</pre></div>
+</div>
+<p>Note that the stable competing phase for 2D MoS2 is bulk layered MoS2; hence the
+directories have the same name.</p>
+</div>
+<div class="section" id="calculating-a-material-s-hull-distance">
+<h2>Calculating a material&#8217;s hull distance<a class="headerlink" href="#calculating-a-material-s-hull-distance" title="Permalink to this headline">¶</a></h2>
+<p>After the 2D and 3D relaxations are all done, you can calculate your material&#8217;s
+hull distance (also frequently called formation energy) by the following:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+
+<span class="kn">from</span> <span class="nn">twod_materials.stability.analysis</span> <span class="k">import</span> <span class="n">get_hull_distance</span>
+
+
+<span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="s1">&#39;MoS2&#39;</span><span class="p">)</span>  <span class="c1"># the 2D one</span>
+<span class="nb">print</span> <span class="n">get_hull_distance</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Boom. That value is in eV/atom by the way. Anything with a hull distance greater
+than 0.15 eV/atom is going to be hard to stabilize experimentally, but for MoS2
+it should be around 0.05.</p>
+</div>
+<div class="section" id="plotting-hull-distances">
+<h2>Plotting hull distances<a class="headerlink" href="#plotting-hull-distances" title="Permalink to this headline">¶</a></h2>
+<p>If you&#8217;ve followed the above steps for multiple 2D materials and want a
+publication-quality plot comparing their hull distances, the following might
+help you:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">twod_materials.stability.analysis</span> <span class="k">import</span> <span class="n">plot_hull_distances</span>
+
+
+<span class="n">hull_distances</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;C&#39;</span><span class="p">:</span> <span class="mf">0.066</span><span class="p">,</span> <span class="s1">&#39;MoS2&#39;</span><span class="p">:</span> <span class="mf">0.053</span><span class="p">,</span> <span class="s1">&#39;BN&#39;</span><span class="p">:</span> <span class="mf">0.072</span><span class="p">}</span>
+<span class="n">plot_hull_distances</span><span class="p">(</span><span class="n">hull_distances</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>That&#8217;s a pretty quick but thorough tour of everything you can do with the
+<code class="docutils literal"><span class="pre">stability</span></code> module in twod_materials.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">The Stability Module</a><ul>
+<li><a class="reference internal" href="#basic-relaxation">Basic Relaxation</a></li>
+<li><a class="reference internal" href="#finding-and-relaxing-competing-phases">Finding and relaxing competing phases</a></li>
+<li><a class="reference internal" href="#calculating-a-material-s-hull-distance">Calculating a material&#8217;s hull distance</a></li>
+<li><a class="reference internal" href="#plotting-hull-distances">Plotting hull distances</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="examples.html">Tutorials</a><ul>
+      <li>Previous: <a href="examples.html" title="previous chapter">Tutorials</a></li>
+      <li>Next: <a href="electronic_structure_tutorial.html" title="next chapter">The Electronic Structure Module</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, Michael Ashton.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

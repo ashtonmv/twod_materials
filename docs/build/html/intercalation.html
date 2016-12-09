@@ -1,0 +1,152 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Intercalation &#8212; twod_materials 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="author" title="About these documents" href="about.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Friction" href="friction.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="intercalation">
+<h1>Intercalation<a class="headerlink" href="#intercalation" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-twod_materials.intercalation.startup">
+<span id="startup"></span><h2>Startup<a class="headerlink" href="#module-twod_materials.intercalation.startup" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="twod_materials.intercalation.startup.inject_ions">
+<code class="descclassname">twod_materials.intercalation.startup.</code><code class="descname">inject_ions</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twod_materials/intercalation/startup.html#inject_ions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twod_materials.intercalation.startup.inject_ions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds ions to a percentage of interstitial sites into a structure
+that results in an at% less than or equal to the specified
+atomic_fraction. Starts by filling interstitial sites with the
+largest voronoi radius, and then works downward.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>structure</strong> (<em>Structure</em>) &#8211; Pymatgen Structure object to
+intercalate into.</li>
+<li><strong>ion</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; name of atom to intercalate, e.g. &#8216;Li&#8217;, or &#8216;Mg&#8217;.</li>
+<li><strong>atomic_fraction</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; This fraction of the final intercalated
+structure will be intercalated atoms. Must be &lt; 1.0.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">structure. Includes intercalated atoms.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-twod_materials.intercalation.analysis">
+<span id="analysis"></span><h2>Analysis<a class="headerlink" href="#module-twod_materials.intercalation.analysis" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="twod_materials.intercalation.analysis.plot_ion_hull_and_voltages">
+<code class="descclassname">twod_materials.intercalation.analysis.</code><code class="descname">plot_ion_hull_and_voltages</code><span class="sig-paren">(</span><em>ion</em>, <em>fmt=u'pdf'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/twod_materials/intercalation/analysis.html#plot_ion_hull_and_voltages"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#twod_materials.intercalation.analysis.plot_ion_hull_and_voltages" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plots the phase diagram between the pure material and pure ion,
+Connecting the points on the convex hull of the phase diagram.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>ion</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; name of atom that was intercalated, e.g. &#8216;Li&#8217;.</li>
+<li><strong>fmt</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; matplotlib format style. Check the matplotlib
+docs for options.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Intercalation</a><ul>
+<li><a class="reference internal" href="#module-twod_materials.intercalation.startup">Startup</a></li>
+<li><a class="reference internal" href="#module-twod_materials.intercalation.analysis">Analysis</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="friction.html" title="previous chapter">Friction</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, Michael Ashton.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

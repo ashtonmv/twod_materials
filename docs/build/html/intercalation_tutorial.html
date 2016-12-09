@@ -1,0 +1,188 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>The Intercalation Module &#8212; twod_materials 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="author" title="About these documents" href="about.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="The Magnetism Module" href="magnetism_tutorial.html" />
+    <link rel="prev" title="The Friction Module" href="friction_tutorial.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="the-intercalation-module">
+<h1>The Intercalation Module<a class="headerlink" href="#the-intercalation-module" title="Permalink to this headline">¶</a></h1>
+<p>The intercalation module is designed for users who want to investigate a 2D
+material&#8217;s ionic storage capacity for applications like battery anodes.
+Technically, it is used to intercalate ions into the layered form of the 2D
+material, since you can&#8217;t really intercalate anything into a single layer.</p>
+<div class="section" id="ion-injection">
+<h2>Ion injection<a class="headerlink" href="#ion-injection" title="Permalink to this headline">¶</a></h2>
+<p>The only function available in <code class="docutils literal"><span class="pre">twod_materials.intercalation.startup</span></code> is
+<code class="docutils literal"><span class="pre">inject_ions()</span></code>. As you can probably imagine, this function is used to inject
+atoms between layers of a 2D material. In order to use this function, you have
+to have Zeo++ installed on your machine. Check out <a class="reference external" href="http://pymatgen.org/installation.html">these instructions</a> for
+getting it installed. Zeo++ is a wonderful piece of software
+that identifies open volumes within crystal structures. That enables
+<code class="docutils literal"><span class="pre">inject_ions()</span></code> to automatically intercalate atoms at the largest open volumes
+in your structure, which will almost definitely be between the layers where they
+would intercalate experimentally.
+Once Zeo++ is all set up, you need to give <code class="docutils literal"><span class="pre">inject_ions()</span></code>
+three things: a pymatgen Structure object (the multi-layered form of your 2D
+material), an ion name and an atomic percentage.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+
+<span class="kn">from</span> <span class="nn">twod_materials.intercalation.startup</span> <span class="k">import</span> <span class="n">inject_ions</span>
+<span class="kn">from</span> <span class="nn">twod_materials.stability.startup</span> <span class="k">import</span> <span class="n">relax</span>
+
+<span class="kn">from</span> <span class="nn">pymatgen.core.structure</span> <span class="k">import</span> <span class="n">Structure</span>
+
+
+<span class="n">structure</span> <span class="o">=</span> <span class="n">Structure</span><span class="o">.</span><span class="n">from_file</span><span class="p">(</span><span class="s1">&#39;your_multilayered_POSCAR&#39;</span><span class="p">)</span>
+<span class="n">inject_ions</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="s1">&#39;Li&#39;</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;POSCAR&#39;</span><span class="p">,</span> <span class="s1">&#39;POSCAR&#39;</span><span class="p">)</span>
+<span class="n">relax</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Running the above script will submit a relaxation job for a structure having 25
+at% Li to your queue. Note that if the specified at% cannot be achieved for the
+structure you gave (<em>i.e</em> the structure is too small), it will automatically
+make a supercell that is large enough to accommodate that at%. For obscure
+at%&#8217;s, this can result in huge structures that often cause seg faults for Zeo++,
+and would be a pain to run in VASP anyway. The only thing you can really do here
+is either make the structures the old-fashioned way (by hand... ew.) or change
+your at% to a more round number.</p>
+<p>I recommend placing your intercalated structures in separate subdirectories
+under a directory called <code class="docutils literal"><span class="pre">intercalation</span></code>, which itself should be under the
+original relaxation directory, like this:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">MoS2</span><span class="o">/</span>  <span class="c1"># Original relaxation directory</span>
+  <span class="n">intercalation</span><span class="o">/</span>
+    <span class="n">Li_25</span><span class="o">/</span>
+    <span class="n">Li_50</span><span class="o">/</span>
+    <span class="n">Li_75</span><span class="o">/</span>
+</pre></div>
+</div>
+<p>That directory structure will be required to use the analysis tools below.</p>
+</div>
+<div class="section" id="plotting-phase-diagram-and-voltages">
+<h2>Plotting phase diagram and voltages<a class="headerlink" href="#plotting-phase-diagram-and-voltages" title="Permalink to this headline">¶</a></h2>
+<p>Similarly to <code class="docutils literal"><span class="pre">startup</span></code>, the <code class="docutils literal"><span class="pre">analysis</span></code> submodule also only has one function,
+because there was really only one thing I cared about when I wrote this module:
+batteries. If you have set up and relaxed several structures with a range of
+intercalated at%&#8217;s, you can calculate the thermodynamic hull of the new phase
+diagram you created using the <code class="docutils literal"><span class="pre">plot_ion_hull_and_voltages()</span></code> function. This
+function should be run from within the <code class="docutils literal"><span class="pre">intercalation</span></code> directory that
+hopefully you took my advice above and made. Assuming you have the directory
+structure above, you can run the following:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+
+<span class="kn">from</span> <span class="nn">twod_materials.intercalation.analysis</span> <span class="k">import</span> <span class="n">plot_ion_hull_and_voltages</span>
+
+
+<span class="n">plot_ion_hull_and_voltages</span><span class="p">(</span><span class="s1">&#39;Li&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>You just have to specify which ion you&#8217;ve intercalated. Right now only Li, Mg,
+and Al are automatically supported, and that assumes you ran all your
+relaxations with the default inputs in
+<code class="docutils literal"><span class="pre">twod_materials.stability.startup.relax()</span></code>. If you want to add your own ion,
+you just need to calculate the energy of its elemental form in eV/atom and add
+it to the <code class="docutils literal"><span class="pre">ion_ev_fu</span></code> dictionary within the function. I&#8217;ll admit that&#8217;s a
+little clunky and will hopefully be deprecated someday soon.</p>
+<p>Anyway, what that function is actually doing is not that complicated- it&#8217;s
+generating a convex hull plot that goes with your 2-dimensional phase diagram.
+The endpoints of that diagram are the 2D material and the elemental ion. Then it
+uses the (negative) slopes of that convex hull as the voltages over given at%
+ranges. As soon as the slope of the convex hull goes positive, no more
+intercalation can be sustained, and your battery has reached its capacity.
+Therefore, this function can be used to determine your material&#8217;s storage
+capacity as well as its voltage profile.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">The Intercalation Module</a><ul>
+<li><a class="reference internal" href="#ion-injection">Ion injection</a></li>
+<li><a class="reference internal" href="#plotting-phase-diagram-and-voltages">Plotting phase diagram and voltages</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="examples.html">Tutorials</a><ul>
+      <li>Previous: <a href="friction_tutorial.html" title="previous chapter">The Friction Module</a></li>
+      <li>Next: <a href="magnetism_tutorial.html" title="next chapter">The Magnetism Module</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, Michael Ashton.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

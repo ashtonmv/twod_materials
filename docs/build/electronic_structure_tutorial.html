@@ -1,0 +1,312 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>The Electronic Structure Module &#8212; twod_materials 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="author" title="About these documents" href="about.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="The Pourbaix Module" href="pourbaix_tutorial.html" />
+    <link rel="prev" title="The Stability Module" href="stability_tutorial.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="the-electronic-structure-module">
+<h1>The Electronic Structure Module<a class="headerlink" href="#the-electronic-structure-module" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="the-basics">
+<h2>The Basics<a class="headerlink" href="#the-basics" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="running-band-structure-calculations">
+<h3>Running band structure calculations<a class="headerlink" href="#running-band-structure-calculations" title="Permalink to this headline">¶</a></h3>
+<p>We&#8217;re just going to keep rolling with the MoS2 example from the stability module
+tutorial, and now we&#8217;re going to calculate its band structure. PBE and HSE06,
+the two levels of exchange-correlation approximations that you&#8217;ll see the most
+of in DFT publications, are both supported in <code class="docutils literal"><span class="pre">twod_materials</span></code>. In general,
+PBE is good for quick band structure calculations, but it usually underestimates
+the band gap by enough that you probably shouldn&#8217;t publish it. HSE06
+calculations can take forever, but they&#8217;re usually very accurate. In this
+tutorial, you&#8217;ll use both to calculate MoS2&#8217;s band structure, so you can compare
+the results yourself.</p>
+<p>It&#8217;s easy to launch both calculations:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+
+<span class="kn">from</span> <span class="nn">twod_materials.electronic_structure.startup</span> <span class="k">import</span> <span class="n">run_pbe_calculation</span><span class="p">,</span>\
+ <span class="n">run_hse_calculation</span>
+
+
+<span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="s1">&#39;MoS2&#39;</span><span class="p">)</span>
+<span class="n">run_pbe_calculation</span><span class="p">()</span>
+<span class="n">run_hse_calculation</span><span class="p">()</span>
+<span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="s1">&#39;../&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>I told you it was easy. Your directories should look something like this:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">MoS2</span><span class="o">/</span>
+  <span class="n">POSCAR</span>   <span class="n">KPOINTS</span>   <span class="n">INCAR</span>   <span class="n">POTCAR</span>   <span class="n">vdw_kernel</span><span class="o">.</span><span class="n">bindat</span>   <span class="n">runjob</span>
+  <span class="n">pbe_bands</span><span class="o">/</span>
+    <span class="n">POSCAR</span>   <span class="n">KPOINTS</span>   <span class="n">INCAR</span>   <span class="n">POTCAR</span>   <span class="n">runjob</span>
+  <span class="n">hse_bands</span><span class="o">/</span>
+    <span class="n">POSCAR</span>   <span class="n">KPOINTS</span>   <span class="n">INCAR</span>   <span class="n">POTCAR</span>   <span class="n">runjob</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="plotting-dos-and-band-structures">
+<h3>Plotting DOS and band structures<a class="headerlink" href="#plotting-dos-and-band-structures" title="Permalink to this headline">¶</a></h3>
+<p>After both calculations are done, you can plot the two band structures and their
+corresponding densities of states like so:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+
+<span class="kn">from</span> <span class="nn">twod_materials.electronic_structure.analysis</span> <span class="k">import</span> <span class="n">plot_band_structure</span><span class="p">,</span>\
+  <span class="n">plot_density_of_states</span>
+
+
+<span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="s1">&#39;MoS2/pbe_bands&#39;</span><span class="p">)</span>
+<span class="n">plot_band_structure</span><span class="p">()</span>
+<span class="n">plot_density_of_states</span><span class="p">()</span>
+<span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="s1">&#39;../hse_bands&#39;</span><span class="p">)</span>
+<span class="n">plot_band_structure</span><span class="p">()</span>
+<span class="n">plot_density_of_states</span><span class="p">()</span>
+<span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="s1">&#39;../../&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Also hopefully very easy. Thanks to the powerful tools in pymatgen, it&#8217;s also
+easy to get some more cool insights from these band structures. In
+<code class="docutils literal"><span class="pre">twod_materials.electronic_structure.analysis</span></code> you can also plot band
+structures that are colored according to each eigenvalue&#8217;s projection onto an
+element (<code class="docutils literal"><span class="pre">plot_color_projected_bands()</span></code> and <code class="docutils literal"><span class="pre">plot_elt_projected_bands()</span></code>
+both do this. <code class="docutils literal"><span class="pre">plot_color_projected_bands()</span></code> looks cooler in my opinion, but
+only works for binary materials) or even onto specific orbitals with
+<code class="docutils literal"><span class="pre">plot_orb_projected_bands()</span></code>. <code class="docutils literal"><span class="pre">plot_orb_projected_bands()</span></code> is different from
+the other two in that it requires an argument, <code class="docutils literal"><span class="pre">orbitals</span></code>, to specify which
+orbital projections to plot. An example in our case might be:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+
+<span class="kn">from</span> <span class="nn">twod_materials.electronic_structure.analysis</span> <span class="k">import</span> <span class="n">plot_band_structure</span>
+
+
+<span class="n">orbitals</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Mo&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;s&#39;</span><span class="p">,</span> <span class="s1">&#39;d&#39;</span><span class="p">],</span> <span class="s1">&#39;S&#39;</span><span class="p">:</span> <span class="s1">&#39;p&#39;</span><span class="p">}</span>
+<span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="s1">&#39;MoS2/pbe_bands&#39;</span><span class="p">)</span>
+<span class="n">plot_orb_projected_bands</span><span class="p">(</span><span class="n">orbitals</span><span class="p">)</span>
+<span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="s1">&#39;../hse_bands&#39;</span><span class="p">)</span>
+<span class="n">plot_orb_projected_bands</span><span class="p">(</span><span class="n">orbitals</span><span class="p">)</span>
+<span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="s1">&#39;../../&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="finding-and-plotting-band-edges">
+<h3>Finding and plotting band edges<a class="headerlink" href="#finding-and-plotting-band-edges" title="Permalink to this headline">¶</a></h3>
+<p>Another interesting thing to analyze are the material&#8217;s band edge locations.
+We already have the data to get them, and they&#8217;re useful for designing
+heterojunctions and photocatalysts. The convention is to calculate the band edge
+locations relative to a fixed potential- for 2D materials it&#8217;s convenient to use
+the vacuum potential. The following script will get you a material&#8217;s CBM and VBM:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+
+<span class="kn">from</span> <span class="nn">twod_materials.electronic_structure.analysis</span> <span class="k">import</span> <span class="n">get_band_edges</span>
+
+
+<span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="s1">&#39;MoS2/pbe_bands&#39;</span><span class="p">)</span>
+<span class="nb">print</span> <span class="s1">&#39;PBE edges&#39;</span><span class="p">,</span> <span class="n">get_band_edges</span><span class="p">()</span>
+<span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="s1">&#39;../hse_bands&#39;</span><span class="p">)</span>
+<span class="nb">print</span> <span class="s1">&#39;HSE edges&#39;</span><span class="p">,</span> <span class="n">get_band_edges</span><span class="p">()</span>
+<span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="s1">&#39;../../&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>And then if you want to plot the band edges of several materials together,
+there&#8217;s a function to do that automatically. If, for example, you have the
+following directories:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">MoS2</span><span class="o">/</span>
+  <span class="n">pbe_bands</span><span class="o">/</span>
+<span class="n">VS2</span><span class="o">/</span>
+  <span class="n">pbe_bands</span><span class="o">/</span>
+<span class="n">BN</span><span class="o">/</span>
+  <span class="n">pbe_bands</span><span class="o">/</span>
+</pre></div>
+</div>
+<p>Then the following script will plot all of their band edges:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">twod_materials.electronic_structure.analysis</span> <span class="k">import</span> <span class="n">plot_band_alignments</span>
+
+
+<span class="n">plot_band_alignments</span><span class="p">([</span><span class="s1">&#39;MoS2&#39;</span><span class="p">,</span> <span class="s1">&#39;VS2&#39;</span><span class="p">,</span> <span class="s1">&#39;BN&#39;</span><span class="p">],</span> <span class="n">run_type</span><span class="o">=</span><span class="s1">&#39;PBE&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>They will all be plotted on top of the redox potential edges of H2O; those with
+edges enveloping the water band might be used as photocatalysts.</p>
+</div>
+</div>
+<div class="section" id="advanced-stuff">
+<h2>Advanced Stuff<a class="headerlink" href="#advanced-stuff" title="Permalink to this headline">¶</a></h2>
+<p>Maybe you&#8217;re bored with plotting band structures and band edges. Fair enough,
+there are functions in here for you too.</p>
+<div class="section" id="calculating-effective-masses">
+<h3>Calculating effective masses<a class="headerlink" href="#calculating-effective-masses" title="Permalink to this headline">¶</a></h3>
+<p>If you want to calculate the effective masses of electrons and holes in a
+semiconductor, this function is for you:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+
+<span class="kn">from</span> <span class="nn">twod_materials.electronic_structure.analysis</span> <span class="k">import</span> <span class="n">get_effective_mass</span>
+
+
+<span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="s1">&#39;MoS2/pbe_bands&#39;</span><span class="p">)</span>
+<span class="nb">print</span> <span class="n">get_effective_mass</span><span class="p">()</span>
+<span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="s1">&#39;../../&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>That will give you a dictionary of results. You can check the documentation on
+<code class="docutils literal"><span class="pre">get_effective_mass()</span></code> for details on what it returns.</p>
+</div>
+<div class="section" id="finding-dirac-nodes">
+<h3>Finding Dirac nodes<a class="headerlink" href="#finding-dirac-nodes" title="Permalink to this headline">¶</a></h3>
+<p>If you have a lot of materials you&#8217;re working on, you can use
+<code class="docutils literal"><span class="pre">find_dirac_nodes()</span></code> to check if any of them have dirac band crossings at or
+near the fermi level:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+
+<span class="kn">from</span> <span class="nn">twod_materials.electronic_structure.analysis</span> <span class="k">import</span> <span class="n">find_dirac_nodes</span>
+
+
+<span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="s1">&#39;MoS2/pbe_bands&#39;</span><span class="p">)</span>
+<span class="nb">print</span> <span class="n">find_dirac_nodes</span><span class="p">()</span>
+<span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="s1">&#39;../../&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>If you find any that do and win a nobel prize, don&#8217;t forget to mention me in
+your speech :)</p>
+</div>
+<div class="section" id="rashba-spin-texture">
+<h3>Rashba spin texture<a class="headerlink" href="#rashba-spin-texture" title="Permalink to this headline">¶</a></h3>
+<p>Should you have a material without centrosymmetry and with large atoms for
+which spin-orbit coupling (SOC) could have significant effects, you might want
+to re-calculate its band structure with SOC turned on. You have to do that
+yourself; there&#8217;s no function in <code class="docutils literal"><span class="pre">twod_materials</span></code> for that but it&#8217;s not too
+hard. If you notice that in the SOC calculation, the CBm or VBM have been split
+into two separate bands, you&#8217;re probably looking at the Rashba effect.</p>
+<p>At this point, you should generate a fine mesh of k-points around the k-point
+where the crossing occurs (in the example below it&#8217;s Gamma) with
+<code class="docutils literal"><span class="pre">twod_materials.utils.write_circle_mesh_kpoints()</span></code> and run another calculation
+with the same INCAR that you used for the SOC band structure calculation:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+
+<span class="kn">from</span> <span class="nn">twod_materials.utils</span> <span class="k">import</span> <span class="n">write_circle_mesh_kpoints</span>
+
+
+<span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="s1">&#39;BiTeCl/SOC_bands&#39;</span><span class="p">)</span>  <span class="c1"># Just an example</span>
+<span class="n">write_circle_mesh_kpoints</span><span class="p">(</span><span class="n">center</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">radius</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">resolution</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Submit the job however you want.</p>
+<p>To plot the spin texture of the two cone-shaped bands (one outer and one
+inner), we made <code class="docutils literal"><span class="pre">plot_spin_texture()</span></code>. Please note that you need to figure out
+which band numbers are the two that have split using some other method.
+<code class="docutils literal"><span class="pre">twod_materials</span></code> can&#8217;t do that yet, but maybe someday. You also need to tell
+it the <em>x</em> and <em>y</em> coordinates of the center of the k-mesh you made above:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+
+<span class="kn">from</span> <span class="nn">twod_materials.electronic_structure.analysis</span> <span class="k">import</span> <span class="n">plot_spin_texture</span>
+
+
+<span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="s1">&#39;BiTeCl/SOC_bands&#39;</span><span class="p">)</span>
+<span class="n">plot_spin_texture</span><span class="p">(</span><span class="n">inner_index</span><span class="o">=</span><span class="mi">34</span><span class="p">,</span> <span class="n">outer_index</span><span class="o">=</span><span class="mi">35</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>That&#8217;s pretty much everything you can do with the <code class="docutils literal"><span class="pre">electronic_structure</span></code>
+module.</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">The Electronic Structure Module</a><ul>
+<li><a class="reference internal" href="#the-basics">The Basics</a><ul>
+<li><a class="reference internal" href="#running-band-structure-calculations">Running band structure calculations</a></li>
+<li><a class="reference internal" href="#plotting-dos-and-band-structures">Plotting DOS and band structures</a></li>
+<li><a class="reference internal" href="#finding-and-plotting-band-edges">Finding and plotting band edges</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#advanced-stuff">Advanced Stuff</a><ul>
+<li><a class="reference internal" href="#calculating-effective-masses">Calculating effective masses</a></li>
+<li><a class="reference internal" href="#finding-dirac-nodes">Finding Dirac nodes</a></li>
+<li><a class="reference internal" href="#rashba-spin-texture">Rashba spin texture</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="examples.html">Tutorials</a><ul>
+      <li>Previous: <a href="stability_tutorial.html" title="previous chapter">The Stability Module</a></li>
+      <li>Next: <a href="pourbaix_tutorial.html" title="next chapter">The Pourbaix Module</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, Michael Ashton.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>
