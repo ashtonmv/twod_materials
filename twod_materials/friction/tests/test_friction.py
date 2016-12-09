@@ -19,6 +19,7 @@ class StartupTest(unittest.TestCase):
         os.chdir('MoS2')
         run_gamma_calculations(submit=False)
         self.assertTrue(os.path.isfile('friction/lateral/0x0/POSCAR'))
+        os.system('rm -r friction')
 
 
 #    def test_run_normal_force_calculations(self):
