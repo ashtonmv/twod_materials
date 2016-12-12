@@ -15,22 +15,27 @@ import numpy as np
 
 import math
 
+import twod_materials
+
 
 PACKAGE_PATH = twod_materials.__file__.replace('__init__.pyc', '')
 PACKAGE_PATH = PACKAGE_PATH.replace('__init__.py', '')
 PACKAGE_PATH = '/'.join(PACKAGE_PATH.split('/')[:-2])
 
 try:
+    config_vars = loadfn(os.path.join(os.path.expanduser('~'), 'config.yaml'))
+except:
+    print('WARNING: No config.yaml file was found. please configure the '\
+    'config.yaml and put it in your home directory.')
+    # Still set them for testing purposes.
     config_vars = loadfn(os.path.join(PACKAGE_PATH, 'config.yaml'))
     VASP = config_vars['normal_binary']
-    if 'queue_system' in config_vars:
-        QUEUE = config_vars['queue_system'].lower()
-    elif '/ufrc/' in os.getcwd():
-        QUEUE = 'slurm'
-    elif '/scratch/' in os.getcwd():
-        QUEUE = 'pbs'
-except Exception as e:
-    print(e)
+if 'queue_system' in config_vars:
+    QUEUE = config_vars['queue_system'].lower()
+elif '/ufrc/' in os.getcwd():
+    QUEUE = 'slurm'
+elif '/scratch/' in os.getcwd():
+    QUEUE = 'pbs'
 
 
 def run_pbe_calculation(dim=2, submit=True, force_overwrite=False):

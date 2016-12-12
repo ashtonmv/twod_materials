@@ -120,6 +120,8 @@ def get_basin_and_peak_locations():
         tuple. Of the form (basin, peak).
     """
 
+    os.chdir('friction/lateral')
+
     static_dirs = [
         d.split('x') for d in os.listdir(os.getcwd()) if 'x' in d and
         len(d) == 3
@@ -130,8 +132,6 @@ def get_basin_and_peak_locations():
 
     X_VALUES = range(n_divs_x)
     Y_VALUES = range(n_divs_y)
-
-    os.chdir('friction/lateral')
 
     abs_maximum = -10000
     abs_minimum = 0
@@ -401,10 +401,14 @@ def get_mu_vs_F_N(basin_dir):
         os.chdir(str(spacing))
         subdirectories = os.listdir(os.getcwd())
 
-        amplitude = abs(
-            Vasprun('{}/vasprun.xml'.format(subdirectories[0])).final_energy
-            - Vasprun('{}/vasprun.xml'.format(subdirectories[1])).final_energy
-            ) / 2
+        try:
+            amplitude = abs(
+                Vasprun('{}/vasprun.xml'.format(subdirectories[0])).final_energy
+                -
+                Vasprun('{}/vasprun.xml'.format(subdirectories[1])).final_energy
+                ) / 2
+        except:
+            print('One or more jobs in {}/ have not converged.'.format(spacing))
 
         start_coords = Structure.from_file(
             '{}/POSCAR'.format(subdirectories[0])

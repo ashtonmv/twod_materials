@@ -19,12 +19,17 @@ PACKAGE_PATH = twod_materials.__file__.replace('__init__.pyc', '')
 PACKAGE_PATH = PACKAGE_PATH.replace('__init__.py', '')
 CONFIG_PATH = '/'.join(PACKAGE_PATH.split('/')[:-2])
 
+try:
+    config_vars = loadfn(os.path.join(os.path.expanduser('~'), 'config.yaml'))
+except:
+    # For testing purposes.
+    config_vars = loadfn(os.path.join(CONFIG_PATH, 'config.yaml'))
+
 if 'MP_API' in os.environ:
+    # For testing purposes.
     MPR = MPRester(os.environ['MP_API'])
 else:
-    MPR = MPRester(
-        loadfn(os.path.join(CONFIG_PATH, 'config.yaml'))['mp_api']
-        )
+    MPR = MPRester(config_vars['mp_api'])
 
 
 class UtilsTest(unittest.TestCase):

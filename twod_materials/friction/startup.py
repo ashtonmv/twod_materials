@@ -21,18 +21,21 @@ PACKAGE_PATH = PACKAGE_PATH.replace('__init__.py', '')
 PACKAGE_PATH = '/'.join(PACKAGE_PATH.split('/')[:-2])
 
 try:
+    config_vars = loadfn(os.path.join(os.path.expanduser('~'), 'config.yaml'))
+except:
+    print('WARNING: No config.yaml file was found. please configure the '\
+    'config.yaml and put it in your home directory.')
+    # Still set them for testing purposes.
     config_vars = loadfn(os.path.join(PACKAGE_PATH, 'config.yaml'))
-    VASP = config_vars['normal_binary']
-    VASP_2D = config_vars['twod_binary']
-    VDW_KERNEL = config_vars['vdw_kernel']
-    if 'queue_system' in config_vars:
-        QUEUE = config_vars['queue_system'].lower()
-    elif '/ufrc/' in os.getcwd():
-        QUEUE = 'slurm'
-    elif '/scratch/' in os.getcwd():
-        QUEUE = 'pbs'
-except Exception as e:
-    print(e)
+VASP = config_vars['normal_binary']
+VASP_2D = config_vars['twod_binary']
+VDW_KERNEL = config_vars['vdw_kernel']
+if 'queue_system' in config_vars:
+    QUEUE = config_vars['queue_system'].lower()
+elif '/ufrc/' in os.getcwd():
+    QUEUE = 'slurm'
+elif '/scratch/' in os.getcwd():
+    QUEUE = 'pbs'
 
 
 def run_gamma_calculations(submit=True, step_size=0.5):

@@ -51,6 +51,7 @@ Edit config.yaml with your system's settings, following the template:
   potentials: path_to_your_vasp_potentials
   queue_system: slurm_or_pbs
 ```
+and then copy or move it to your home directory (~).
 
 # How the package is structured #
 

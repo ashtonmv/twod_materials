@@ -20,7 +20,7 @@ PACKAGE_PATH = '/'.join(PACKAGE_PATH.split('/')[:-2])
 
 INCAR_DICT = {
     '@class': 'Incar', '@module': 'pymatgen.io.vasp.inputs', 'AGGAC': 0.0,
-    'EDIFF': 1e-06, 'GGA': 'Bo', 'IBRION': 2, 'ISIF': 3, 'ISMEAR': 1,
+    'EDIFF': 1e-04, 'GGA': 'Bo', 'IBRION': 2, 'ISIF': 3, 'ISMEAR': 1,
     'LAECHG': True, 'LCHARG': True, 'LREAL': 'Auto', 'LUSE_VDW': True,
     'NPAR': 4, 'NSW': 50, 'PARAM1': 0.1833333333, 'PARAM2': 0.22,
     'PREC': 'Accurate', 'ENCUT': 500, 'SIGMA': 0.1, 'LVTOT': True,
@@ -28,22 +28,25 @@ INCAR_DICT = {
     }
 
 try:
+    config_vars = loadfn(os.path.join(os.path.expanduser('~'), 'config.yaml'))
+except:
+    print('WARNING: No config.yaml file was found. Please configure the '\
+    'config.yaml and put it in your home directory.')
+    # Still set them for testing purposes.
     config_vars = loadfn(os.path.join(PACKAGE_PATH, 'config.yaml'))
-    if 'MP_API' in os.environ:
-        MPR = MPRester(os.environ['MP_API'])
-    else:
-        MPR = MPRester(config_vars['mp_api'])
-    VASP = config_vars['normal_binary']
-    VASP_2D = config_vars['twod_binary']
-    VDW_KERNEL = config_vars['vdw_kernel']
-    if 'queue_system' in config_vars:
-        QUEUE = config_vars['queue_system'].lower()
-    elif '/ufrc/' in os.getcwd():
-        QUEUE = 'slurm'
-    elif '/scratch/' in os.getcwd():
-        QUEUE = 'pbs'
-except Exception as e:
-    print(e)
+if 'MP_API' in os.environ:
+    MPR = MPRester(os.environ['MP_API'])
+else:
+    MPR = MPRester(config_vars['mp_api'])
+VASP = config_vars['normal_binary']
+VASP_2D = config_vars['twod_binary']
+VDW_KERNEL = config_vars['vdw_kernel']
+if 'queue_system' in config_vars:
+    QUEUE = config_vars['queue_system'].lower()
+elif '/ufrc/' in os.getcwd():
+    QUEUE = 'slurm'
+elif '/scratch/' in os.getcwd():
+    QUEUE = 'pbs'
 
 
 def relax(dim=2, submit=True, force_overwrite=False):

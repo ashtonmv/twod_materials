@@ -29,15 +29,18 @@ except ImportError:
     zeo_found = False
 
 try:
+    config_vars = loadfn(os.path.join(os.path.expanduser('~'), 'config.yaml'))
+except:
+    print('WARNING: No config.yaml file was found. please configure the '\
+    'config.yaml and put it in your home directory.')
+    # Still set them for testing purposes.
     config_vars = loadfn(os.path.join(PACKAGE_PATH, 'config.yaml'))
-    if 'queue_system' in config_vars:
-        QUEUE = config_vars['queue_system'].lower()
-    elif '/ufrc/' in os.getcwd():
-        QUEUE = 'slurm'
-    elif '/scratch/' in os.getcwd():
-        QUEUE = 'pbs'
-except Exception as e:
-    print(e)
+if 'queue_system' in config_vars:
+    QUEUE = config_vars['queue_system'].lower()
+elif '/ufrc/' in os.getcwd():
+    QUEUE = 'slurm'
+elif '/scratch/' in os.getcwd():
+    QUEUE = 'pbs'
 
 
 @requires(zeo_found, 'get_voronoi_nodes requires Zeo++ cython extension to be '

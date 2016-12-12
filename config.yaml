@@ -1,4 +1,5 @@
-# Configure these settings for your system.
+# Configure these settings for your system, and then
+# copy this file to your home directory (~).
 mp_api: your_materials_project_api_key
 normal_binary: /path/to/vasp/executable
 twod_binary: /path/to/2D/vasp/executable
