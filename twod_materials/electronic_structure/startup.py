@@ -172,7 +172,7 @@ def run_hse_calculation(dim=2, submit=True, force_overwrite=False,
         os.chdir('hse_bands')
         os.system('cp ../CONTCAR ./POSCAR')
         if os.path.isfile('../POTCAR'):
-            os.system('cp POTCAR .')
+            os.system('cp ../POTCAR .')
         HSE_INCAR_DICT.update({'MAGMOM': get_magmom_string()})
         Incar.from_dict(HSE_INCAR_DICT).write_file('INCAR')
 
