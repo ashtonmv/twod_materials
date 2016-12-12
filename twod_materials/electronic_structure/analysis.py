@@ -46,8 +46,9 @@ def get_band_edges():
                  'dn_vbm': dn_vbm, 'efermi': efermi}
 
     else:
-        cbm = min([e[0] for e in eigenvals[Spin.up] if not e[1]]) - evac
-        vbm = max([e[0] for e in eigenvals[Spin.up] if e[1]]) - evac
+        bs = vasprun.get_band_structure()
+        cbm = bs.get_cbm()['energy'] - evac
+        vbm = bs.get_vbm()['energy'] - evac
         edges = {'cbm': cbm, 'vbm': vbm, 'efermi': efermi}
 
     return edges
