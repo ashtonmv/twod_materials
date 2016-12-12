@@ -1,0 +1,4 @@
+include README.md
+include config.yaml
+recursive-include twod_materials *.py
+recursive-include examples *.py
