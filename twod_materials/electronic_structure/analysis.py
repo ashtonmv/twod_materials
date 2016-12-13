@@ -293,9 +293,10 @@ def plot_band_structure(ylim=(-5, 5), draw_fermi=False, fmt='pdf'):
                                                efermi=efermi))
     plot = bsp.get_plot(ylim=ylim)
     fig = plot.gcf()
+    ax = fig.gca()
+    ax.set_xticklabels([r'$\mathrm{%s}$' % t for t in ax.get_xticklabels()])
     if draw_fermi:
-        fig.gca().plot([fig.gca().get_xlim()[0], fig.gca().get_xlim()[1]],
-                       [0, 0], 'k--')
+        ax.plot([ax.get_xlim()[0], ax.get_xlim()[1]], [0, 0], 'k--')
     fig.savefig('band_structure.{}'.format(fmt), transparent=True)
     plt.close()
 
@@ -318,6 +319,7 @@ def plot_color_projected_bands(ylim=(-5, 5), fmt='pdf'):
     plot = bspp.get_elt_projected_plots_color()
     fig = plot.gcf()
     ax = fig.gca()
+    ax.set_xticklabels([r'$\mathrm{%s}$' % t for t in ax.get_xticklabels()])
     ax.set_ylim(ylim)
     fig.savefig('color_projected_bands.{}'.format(fmt))
     plt.close()
