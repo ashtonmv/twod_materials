@@ -49,6 +49,7 @@ Edit config.yaml with your system's settings, following the template:
   normal_binary: path_to_normal_vasp_executable
   twod_binary: path_to_twod_vasp_executable
   potentials: path_to_your_vasp_potentials
+  vdw_kernel: path_to_your_vdw_kernel.bindat
   queue_system: slurm_or_pbs
 ```
 and then copy or move it to your home directory (~).
