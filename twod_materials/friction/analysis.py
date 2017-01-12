@@ -49,8 +49,8 @@ def plot_gamma_surface(fmt='pdf'):
 
     ENERGY_ARRAY = []
 
-    X_VALUES = range(n_divs_x)
-    Y_VALUES = range(n_divs_y)
+    X_VALUES = range(n_divs_x + 1)
+    Y_VALUES = range(n_divs_y + 1)
 
     not_converged = []
     for x in X_VALUES:
@@ -68,7 +68,7 @@ def plot_gamma_surface(fmt='pdf'):
         ENERGY_ARRAY[x].append(ENERGY_ARRAY[x][0])
 
     ENERGY_ARRAY.append([])
-    ENERGY_ARRAY[n_divs_x] = ENERGY_ARRAY[0]
+    #ENERGY_ARRAY[n_divs_x] = ENERGY_ARRAY[0]
 
     if not_converged:
         warnings.warn('{} did not converge.'.format(not_converged))
