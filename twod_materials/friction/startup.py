@@ -104,7 +104,7 @@ def run_gamma_calculations(submit=True, step_size=0.5):
             utl.write_potcar()
             incar_dict = Incar.from_file('INCAR').as_dict()
             incar_dict.update({'NSW': 0, 'LAECHG': False, 'LCHARG': False,
-                               'LWAVE': False,
+                               'LWAVE': False, 'LVTOT': False,
                                'MAGMOM': utl.get_magmom_string()})
             incar_dict.pop('NPAR', None)
             Incar.from_dict(incar_dict).write_file('INCAR')

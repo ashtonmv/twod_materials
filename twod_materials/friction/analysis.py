@@ -108,6 +108,7 @@ def plot_gamma_surface(fmt='pdf'):
     os.chdir('../../')
 
     plt.savefig('gamma_surface.{}'.format(fmt), transparent=True)
+    plt.close()
 
 
 def get_basin_and_peak_locations():
