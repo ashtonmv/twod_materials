@@ -72,13 +72,16 @@
 <span class="n">PACKAGE_PATH</span> <span class="o">=</span> <span class="s1">&#39;/&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">PACKAGE_PATH</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)[:</span><span class="o">-</span><span class="mi">2</span><span class="p">])</span>
 
 <span class="k">try</span><span class="p">:</span>
+    <span class="n">config_vars</span> <span class="o">=</span> <span class="n">loadfn</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="s1">&#39;~&#39;</span><span class="p">),</span> <span class="s1">&#39;config.yaml&#39;</span><span class="p">))</span>
+<span class="k">except</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;WARNING: No config.yaml file was found. please configure the &#39;</span>\
+    <span class="s1">&#39;config.yaml and put it in your home directory.&#39;</span><span class="p">)</span>
+    <span class="c1"># Still set them for testing purposes.</span>
     <span class="n">config_vars</span> <span class="o">=</span> <span class="n">loadfn</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">PACKAGE_PATH</span><span class="p">,</span> <span class="s1">&#39;config.yaml&#39;</span><span class="p">))</span>
-    <span class="k">if</span> <span class="s1">&#39;MP_API&#39;</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">:</span>
-        <span class="n">MPR</span> <span class="o">=</span> <span class="n">MPRester</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;MP_API&#39;</span><span class="p">])</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">MPR</span> <span class="o">=</span> <span class="n">MPRester</span><span class="p">(</span><span class="n">config_vars</span><span class="p">[</span><span class="s1">&#39;mp_api&#39;</span><span class="p">])</span>
-<span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+<span class="k">if</span> <span class="s1">&#39;MP_API&#39;</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">:</span>
+    <span class="n">MPR</span> <span class="o">=</span> <span class="n">MPRester</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;MP_API&#39;</span><span class="p">])</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">MPR</span> <span class="o">=</span> <span class="n">MPRester</span><span class="p">(</span><span class="n">config_vars</span><span class="p">[</span><span class="s1">&#39;mp_api&#39;</span><span class="p">])</span>
 
 
 <div class="viewcode-block" id="get_competing_phases"><a class="viewcode-back" href="../../../stability.html#twod_materials.stability.analysis.get_competing_phases">[docs]</a><span class="k">def</span> <span class="nf">get_competing_phases</span><span class="p">():</span>

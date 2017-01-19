@@ -1,5 +1,13 @@
-About twod_materials
-====================
+About ``twod_materials``
+========================
+
+The official documentation for ``twod_materials``, which includes a pretty
+comprehensive set of tutorials, can be found
+here_.
+
+The `wiki pages`_ contain the
+unofficial but still well-maintained documentation for ``twod_materials``,
+including the tutorials.
 
 Overview
 --------
@@ -14,12 +22,19 @@ restrictive, but to be streamlined.
 
 Installation and setup
 ----------------------
-``twod_materials`` must be installed through Github_. Once you've cloned its
-repository, run ``pip install numpy`` and then
+The latest stable release can be installed with ``pip``:
+::
+  pip install numpy
+  pip install twod_materials
+
+
+Alternatively, the very latest (no promises) version of ``twod_materials`` can be
+installed from GitHub_. Once you've cloned it
+on your system, run ``pip install numpy`` and then
 ``pip install -r requirements.txt`` to install its dependencies. You should then
 add its location to your system's ``$PYTHONPATH`` so you can import its
 functions from anywhere. There are a few ways to do this, including adding the
-following line to your ``~/.bashrc`` file:
+following line to your ~/.bashrc file:
 ::
   export PYTHONPATH=$PYTHONPATH:/path/to/twod_materials  # obviously change this
 
@@ -29,8 +44,10 @@ Edit config.yaml with your system's settings, following the template:
   normal_binary: path_to_normal_vasp_executable
   twod_binary: path_to_twod_vasp_executable
   potentials: path_to_your_vasp_potentials
+  vdw_kernel: path_to_your_vdw_kernel.bindat
   queue_system: slurm_or_pbs
 
+and then copy or move it to your home directory (~).
 
 How the package is structured
 -----------------------------
@@ -47,12 +64,13 @@ might be helpful to think of the ``startup`` submodules as pre-processing tools.
 The ``analysis`` submodules, then, contain post-processing functions. These
 post-processing functions can be grouped into two main categories: functions for
 analyzing data and functions for plotting it. All plotting functions use
-``matplotlib``.
+matplotlib.
 
 Throughout the package, there are a few configuration files that for the most
 part don't need to be changed (as opposed to config.yaml, which does):
 potcar_symbols.yaml and the yaml files under the ``pourbaix`` module.
 
-See the tutorials for sample usage of every function in ``twod_materials``.
 
-.. _Github: http://github.com/ashtonmv/twod_materials
+.. _here: https://pythonhosted.org/twod_materials/
+.. _wiki pages: https://github.com/ashtonmv/twod_materials/wiki
+.. _GitHub: http://github.com/ashtonmv/twod_materials

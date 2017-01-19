@@ -124,11 +124,11 @@ def run_gamma_calculations(submit=True, step_size=0.5):
                                  + '\n')
 
             if QUEUE == 'pbs':
-                utl.write_pbs_runjob(dir, 1, 4, '800mb', '1:00:00', VASP)
+                utl.write_pbs_runjob(dir, 1, 8, '1000mb', '2:00:00', VASP)
                 submission_command = 'qsub runjob'
 
             elif QUEUE == 'slurm':
-                utl.write_slurm_runjob(dir, 4, '800mb', '1:00:00', VASP)
+                utl.write_slurm_runjob(dir, 8, '1000mb', '2:00:00', VASP)
                 submission_command = 'sbatch runjob'
 
             if submit:
@@ -205,12 +205,12 @@ def run_normal_force_calculations(basin_and_saddle_dirs,
 
             if QUEUE == 'pbs':
                 utl.write_pbs_runjob('{}_{}'.format(subdirectory, spacing), 1,
-                    4, '400mb', '1:00:00', VASP)
+                    8, '1000mb', '2:00:00', VASP)
                 submission_command = 'qsub runjob'
 
             elif QUEUE == 'slurm':
-                utl.write_slurm_runjob('{}_{}'.format(subdirectory, spacing), 4,
-                    '400mb', '1:00:00', VASP)
+                utl.write_slurm_runjob('{}_{}'.format(subdirectory, spacing), 8,
+                    '1000mb', '2:00:00', VASP)
                 submission_command = 'sbatch runjob'
 
             if submit:

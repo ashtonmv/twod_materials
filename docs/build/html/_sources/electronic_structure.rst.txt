@@ -1,6 +1,5 @@
-=======
 Electronic Structure
-=======
+====================
 
 Startup
 _______
@@ -8,6 +7,6 @@ _______
     :members:
 
 Analysis
-_______
+________
 .. automodule:: twod_materials.electronic_structure.analysis
     :members:
