@@ -66,20 +66,21 @@
 <span class="n">PACKAGE_PATH</span> <span class="o">=</span> <span class="s1">&#39;/&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">PACKAGE_PATH</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)[:</span><span class="o">-</span><span class="mi">2</span><span class="p">])</span>
 
 <span class="k">try</span><span class="p">:</span>
+    <span class="n">config_vars</span> <span class="o">=</span> <span class="n">loadfn</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="s1">&#39;~&#39;</span><span class="p">),</span> <span class="s1">&#39;config.yaml&#39;</span><span class="p">))</span>
+<span class="k">except</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;WARNING: No config.yaml file was found. please configure the &#39;</span>\
+    <span class="s1">&#39;config.yaml and put it in your home directory.&#39;</span><span class="p">)</span>
+    <span class="c1"># Still set them for testing purposes.</span>
     <span class="n">config_vars</span> <span class="o">=</span> <span class="n">loadfn</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">PACKAGE_PATH</span><span class="p">,</span> <span class="s1">&#39;config.yaml&#39;</span><span class="p">))</span>
-    <span class="n">VASP</span> <span class="o">=</span> <span class="n">config_vars</span><span class="p">[</span><span class="s1">&#39;normal_binary&#39;</span><span class="p">]</span>
-    <span class="n">VASP_2D</span> <span class="o">=</span> <span class="n">config_vars</span><span class="p">[</span><span class="s1">&#39;twod_binary&#39;</span><span class="p">]</span>
-    <span class="n">VDW_KERNEL</span> <span class="o">=</span> <span class="n">config_vars</span><span class="p">[</span><span class="s1">&#39;vdw_kernel&#39;</span><span class="p">]</span>
-    <span class="k">if</span> <span class="s1">&#39;queue_system&#39;</span> <span class="ow">in</span> <span class="n">config_vars</span><span class="p">:</span>
-        <span class="n">QUEUE</span> <span class="o">=</span> <span class="n">config_vars</span><span class="p">[</span><span class="s1">&#39;queue_system&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
-    <span class="k">elif</span> <span class="s1">&#39;/ufrc/&#39;</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">():</span>
-        <span class="n">QUEUE</span> <span class="o">=</span> <span class="s1">&#39;slurm&#39;</span>
-    <span class="k">elif</span> <span class="s1">&#39;/scratch/&#39;</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">():</span>
-        <span class="n">QUEUE</span> <span class="o">=</span> <span class="s1">&#39;pbs&#39;</span>
-<span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
-
-
+<span class="n">VASP</span> <span class="o">=</span> <span class="n">config_vars</span><span class="p">[</span><span class="s1">&#39;normal_binary&#39;</span><span class="p">]</span>
+<span class="n">VASP_2D</span> <span class="o">=</span> <span class="n">config_vars</span><span class="p">[</span><span class="s1">&#39;twod_binary&#39;</span><span class="p">]</span>
+<span class="n">VDW_KERNEL</span> <span class="o">=</span> <span class="n">config_vars</span><span class="p">[</span><span class="s1">&#39;vdw_kernel&#39;</span><span class="p">]</span>
+<span class="k">if</span> <span class="s1">&#39;queue_system&#39;</span> <span class="ow">in</span> <span class="n">config_vars</span><span class="p">:</span>
+    <span class="n">QUEUE</span> <span class="o">=</span> <span class="n">config_vars</span><span class="p">[</span><span class="s1">&#39;queue_system&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+<span class="k">elif</span> <span class="s1">&#39;/ufrc/&#39;</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">():</span>
+    <span class="n">QUEUE</span> <span class="o">=</span> <span class="s1">&#39;slurm&#39;</span>
+<span class="k">elif</span> <span class="s1">&#39;/scratch/&#39;</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">():</span>
+    <span class="n">QUEUE</span> <span class="o">=</span> <span class="s1">&#39;pbs&#39;</span>
 
 
 <div class="viewcode-block" id="run_gamma_calculations"><a class="viewcode-back" href="../../../friction.html#twod_materials.friction.startup.run_gamma_calculations">[docs]</a><span class="k">def</span> <span class="nf">run_gamma_calculations</span><span class="p">(</span><span class="n">submit</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">step_size</span><span class="o">=</span><span class="mf">0.5</span><span class="p">):</span>
@@ -226,11 +227,11 @@
             <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">/</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">spacing</span><span class="p">,</span> <span class="n">subdirectory</span><span class="p">))</span>
             <span class="n">structure</span> <span class="o">=</span> <span class="n">Structure</span><span class="o">.</span><span class="n">from_file</span><span class="p">(</span><span class="s1">&#39;POSCAR&#39;</span><span class="p">)</span>
             <span class="n">n_sites</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">structure</span><span class="o">.</span><span class="n">sites</span><span class="p">)</span>
-            <span class="n">top_layer</span> <span class="o">=</span> <span class="n">structure</span><span class="o">.</span><span class="n">sites</span><span class="p">[</span><span class="n">n_sites</span> <span class="o">/</span> <span class="mi">2</span><span class="p">:]</span>
+            <span class="n">top_layer</span> <span class="o">=</span> <span class="n">structure</span><span class="o">.</span><span class="n">sites</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">n_sites</span> <span class="o">/</span> <span class="mi">2</span><span class="p">):]</span>
             <span class="n">bottom_of_top_layer</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span>
                 <span class="p">[</span><span class="n">z_coord</span> <span class="k">for</span> <span class="n">z_coord</span> <span class="ow">in</span> <span class="p">[</span><span class="n">site</span><span class="o">.</span><span class="n">coords</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="k">for</span> <span class="n">site</span> <span class="ow">in</span> <span class="n">top_layer</span><span class="p">]])</span>
 
-            <span class="n">remove_indices</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_sites</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">n_sites</span><span class="p">)</span>
+            <span class="n">remove_indices</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">n_sites</span> <span class="o">/</span> <span class="mi">2</span><span class="p">),</span> <span class="n">n_sites</span><span class="p">)</span>
 
             <span class="n">structure</span><span class="o">.</span><span class="n">remove_sites</span><span class="p">(</span><span class="n">remove_indices</span><span class="p">)</span>
             <span class="n">max_height</span> <span class="o">=</span> <span class="nb">max</span><span class="p">([</span><span class="n">site</span><span class="o">.</span><span class="n">coords</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="k">for</span> <span class="n">site</span> <span class="ow">in</span> <span class="n">structure</span><span class="o">.</span><span class="n">sites</span><span class="p">])</span>
@@ -247,12 +248,12 @@
 
             <span class="n">structure</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;POSCAR&#39;</span><span class="p">,</span> <span class="s1">&#39;POSCAR&#39;</span><span class="p">)</span>
 
-            <span class="k">if</span> <span class="n">HIPERGATOR</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">QUEUE</span> <span class="o">==</span> <span class="s1">&#39;pbs&#39;</span><span class="p">:</span>
                 <span class="n">utl</span><span class="o">.</span><span class="n">write_pbs_runjob</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">_</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">subdirectory</span><span class="p">,</span> <span class="n">spacing</span><span class="p">),</span> <span class="mi">1</span><span class="p">,</span>
                     <span class="mi">4</span><span class="p">,</span> <span class="s1">&#39;400mb&#39;</span><span class="p">,</span> <span class="s1">&#39;1:00:00&#39;</span><span class="p">,</span> <span class="n">VASP</span><span class="p">)</span>
                 <span class="n">submission_command</span> <span class="o">=</span> <span class="s1">&#39;qsub runjob&#39;</span>
 
-            <span class="k">elif</span> <span class="n">HIPERGATOR</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">elif</span> <span class="n">QUEUE</span> <span class="o">==</span> <span class="s1">&#39;slurm&#39;</span><span class="p">:</span>
                 <span class="n">utl</span><span class="o">.</span><span class="n">write_slurm_runjob</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">_</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">subdirectory</span><span class="p">,</span> <span class="n">spacing</span><span class="p">),</span> <span class="mi">4</span><span class="p">,</span>
                     <span class="s1">&#39;400mb&#39;</span><span class="p">,</span> <span class="s1">&#39;1:00:00&#39;</span><span class="p">,</span> <span class="n">VASP</span><span class="p">)</span>
                 <span class="n">submission_command</span> <span class="o">=</span> <span class="s1">&#39;sbatch runjob&#39;</span>

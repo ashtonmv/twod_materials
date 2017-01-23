@@ -74,15 +74,18 @@
     <span class="n">zeo_found</span> <span class="o">=</span> <span class="kc">False</span>
 
 <span class="k">try</span><span class="p">:</span>
+    <span class="n">config_vars</span> <span class="o">=</span> <span class="n">loadfn</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="s1">&#39;~&#39;</span><span class="p">),</span> <span class="s1">&#39;config.yaml&#39;</span><span class="p">))</span>
+<span class="k">except</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;WARNING: No config.yaml file was found. please configure the &#39;</span>\
+    <span class="s1">&#39;config.yaml and put it in your home directory.&#39;</span><span class="p">)</span>
+    <span class="c1"># Still set them for testing purposes.</span>
     <span class="n">config_vars</span> <span class="o">=</span> <span class="n">loadfn</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">PACKAGE_PATH</span><span class="p">,</span> <span class="s1">&#39;config.yaml&#39;</span><span class="p">))</span>
-    <span class="k">if</span> <span class="s1">&#39;queue_system&#39;</span> <span class="ow">in</span> <span class="n">config_vars</span><span class="p">:</span>
-        <span class="n">QUEUE</span> <span class="o">=</span> <span class="n">config_vars</span><span class="p">[</span><span class="s1">&#39;queue_system&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
-    <span class="k">elif</span> <span class="s1">&#39;/ufrc/&#39;</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">():</span>
-        <span class="n">QUEUE</span> <span class="o">=</span> <span class="s1">&#39;slurm&#39;</span>
-    <span class="k">elif</span> <span class="s1">&#39;/scratch/&#39;</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">():</span>
-        <span class="n">QUEUE</span> <span class="o">=</span> <span class="s1">&#39;pbs&#39;</span>
-<span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+<span class="k">if</span> <span class="s1">&#39;queue_system&#39;</span> <span class="ow">in</span> <span class="n">config_vars</span><span class="p">:</span>
+    <span class="n">QUEUE</span> <span class="o">=</span> <span class="n">config_vars</span><span class="p">[</span><span class="s1">&#39;queue_system&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+<span class="k">elif</span> <span class="s1">&#39;/ufrc/&#39;</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">():</span>
+    <span class="n">QUEUE</span> <span class="o">=</span> <span class="s1">&#39;slurm&#39;</span>
+<span class="k">elif</span> <span class="s1">&#39;/scratch/&#39;</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">():</span>
+    <span class="n">QUEUE</span> <span class="o">=</span> <span class="s1">&#39;pbs&#39;</span>
 
 
 <span class="nd">@requires</span><span class="p">(</span><span class="n">zeo_found</span><span class="p">,</span> <span class="s1">&#39;get_voronoi_nodes requires Zeo++ cython extension to be &#39;</span>

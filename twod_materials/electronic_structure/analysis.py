@@ -85,13 +85,12 @@ def plot_band_alignments(directories, run_type='PBE', fmt='pdf'):
             locpot = Locpot.from_file('LOCPOT')
             evac = max(locpot.get_average_along_axis(2))
 
-            try:
-                is_metal = False
+            if not band_structure.is_metal():
                 is_direct = band_gap['direct']
                 cbm = band_structure.get_cbm()
                 vbm = band_structure.get_vbm()
 
-            except AttributeError:
+            else:
                 cbm = None
                 vbm = None
                 is_metal = True
@@ -99,21 +98,22 @@ def plot_band_alignments(directories, run_type='PBE', fmt='pdf'):
 
             band_gaps[directory] = {'CBM': cbm, 'VBM': vbm,
                                     'Direct': is_direct,
-                                    'Metal': is_metal, 'E_vac': evac}
+                                    'Metal': band_structure.is_metal(),
+                                    'E_vac': evac}
 
             os.chdir('../../')
 
     ax = plt.figure(figsize=(16, 10)).gca()
 
-    x_max = len(band_gaps)*1.315
+    x_max = len(band_gaps) * 1.315
     ax.set_xlim(0, x_max)
 
     # Rectangle representing band edges of water.
     ax.add_patch(plt.Rectangle((0, -5.67), height=1.23, width=len(band_gaps),
                  facecolor='#00cc99', linewidth=0))
-    ax.text(len(band_gaps)*1.01, -4.44, r'$\mathrm{H+/H_2}$', size=20,
+    ax.text(len(band_gaps) * 1.01, -4.44, r'$\mathrm{H+/H_2}$', size=20,
             verticalalignment='center')
-    ax.text(len(band_gaps)*1.01, -5.67, r'$\mathrm{O_2/H_2O}$', size=20,
+    ax.text(len(band_gaps) * 1.01, -5.67, r'$\mathrm{O_2/H_2O}$', size=20,
             verticalalignment='center')
 
     x_ticklabels = []
@@ -165,7 +165,7 @@ def plot_band_alignments(directories, run_type='PBE', fmt='pdf'):
 
         i += 1
 
-    ax.set_ylim(y_min, -2)
+    ax.set_ylim(y_min, 0)
 
     # Set tick labels
     ax.set_xticks([n + 0.4 for n in range(i)])
