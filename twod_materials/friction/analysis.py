@@ -361,7 +361,7 @@ def plot_mu_vs_F_N(basin_dir, fmt='pdf'):
         amplitude = abs(
             Vasprun('{}/vasprun.xml'.format(subdirectories[0])).final_energy
             - Vasprun('{}/vasprun.xml'.format(subdirectories[1])).final_energy
-            ) / 2
+            ) / (2 * n_surface_atoms)
 
         start_coords = Structure.from_file(
             '{}/POSCAR'.format(subdirectories[0])
@@ -437,7 +437,7 @@ def get_mu_vs_F_N(basin_dir):
                 Vasprun('{}/vasprun.xml'.format(subdirectories[0])).final_energy
                 -
                 Vasprun('{}/vasprun.xml'.format(subdirectories[1])).final_energy
-                ) / 2
+                ) / (2 * n_surface_atoms)
         except:
             print('One or more jobs in {}/ have not converged.'.format(spacing))
 
