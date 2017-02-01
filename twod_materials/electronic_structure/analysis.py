@@ -538,6 +538,46 @@ def plot_density_of_states(fmt='pdf'):
     plt.close()
 
 
+def get_fermi_velocities():
+    """
+    Calculates the fermi velocity of each band that crosses the fermi
+    level, according to v_F = dE/(h_bar*dk).
+
+    Returns:
+        fermi_velocities (list). The absolute values of the
+            adjusted slopes of each band, in Angstroms/s.
+    """
+
+    vr = Vasprun('vasprun.xml')
+    eigenvalues = vr.eigenvalues
+    bs = vr.get_band_structure()
+    bands = bs.bands
+    kpoints = bs.kpoints
+    efermi = bs.efermi
+    h_bar = 6.582e-16  # eV*s
+
+    fermi_bands = []
+    for spin in bands:
+        for i in range(len(bands[spin])):
+            if max(bands[spin][i]) > efermi > min(bands[spin][i]):
+                fermi_bands.append(bands[spin][i])
+
+
+    fermi_velocities = []
+    for band in fermi_bands:
+        for i in range(len(band)-1):
+            if (band[i] < efermi and band[i+1] > efermi) or (
+                    band[i] > efermi and band[i+1] < efermi):
+                dk = np.sqrt((kpoints[i+1].cart_coords[0]
+                              - kpoints[i].cart_coords[0])**2
+                             + (kpoints[i+1].cart_coords[1]
+                              - kpoints[i].cart_coords[1])**2)
+                v_f = abs((band[i+1] - band[i]) / (h_bar * dk))
+                fermi_velocities.append(v_f)
+
+    return fermi_velocities  # Values are in Angst./s
+
+
 def find_dirac_nodes():
     """
     Look for band crossings near (within `tol` eV) the Fermi level.
