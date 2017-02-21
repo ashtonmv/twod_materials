@@ -1,6 +1,10 @@
 [![Build Status](https://travis-ci.org/ashtonmv/twod_materials.svg?branch=master)](https://travis-ci.org/ashtonmv/twod_materials)
 [![Coverage](https://codecov.io/gh/ashtonmv/twod_materials/coverage.svg?branch=master)](https://codecov.io/gh/ashtonmv/twod_materials)
 
+**Please Note** this version of twod_materials is no longer slated to receive
+updates; it has been merged as a part of [MPInterfaces](https://github.com/henniggroup/MPInterfaces),
+so please install and reference from that repository.
+
 <img src="https://s3.amazonaws.com/mashton/twod_materials_logo.png" alt="Drawing" width="200"/>
 
 About twod_materials
