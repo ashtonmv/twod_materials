@@ -5,8 +5,6 @@
 updates; it has been merged as a part of [MPInterfaces](https://github.com/henniggroup/MPInterfaces),
 so please install and reference from that repository.
 
-<img src="https://s3.amazonaws.com/mashton/twod_materials_logo.png" alt="Drawing" width="200"/>
-
 About twod_materials
 ====================
 
